@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Cookbook{% endblock %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .tag { background: #eee; padding: 4px 8px; margin-right: 5px; border-radius: 4px; }
+        .chefs-note { background: #fff8e1; padding: 12px; margin-top: 20px; border-left: 4px solid #f4b400; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><a href="/">🍲 Cookbook</a></h1>
+    <hr>
+</header>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

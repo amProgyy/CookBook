@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Recipe{% endblock %}
+
+{% block content %}
+<h2>Create Recipe</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.title.label_tag }}<br>{{ form.title }}<br>
+    {{ form.description.label_tag }}<br>{{ form.description }}<br>
+    {{ form.chefs_note.label_tag }}<br>{{ form.chefs_note }}<br>
+    {{ form.number_of_servings.label_tag }}<br>{{ form.number_of_servings }}<br>
+    {{ form.tag_names.label_tag }}<br>{{ form.tag_names }}<br>
+
+    <!-- Ingredients -->
+    <h3>Ingredients</h3>
+    {{ ingredient_formset.management_form }}
+    <div id="ingredient-container">
+        {% for form in ingredient_formset %}
+        <div class="ingredient-form">
+            <span class="ingredient-number"></span>
+            {{ form.name }} {{ form.quantity }} {{ form.unit }} 
+            <button type="button" class="remove-ingredient">❌</button>
+        </div>
+        {% endfor %}
+    </div>
+    <button type="button" id="add-ingredient">➕ Add Ingredient</button>
+
+    <br><br>
+
+    <!-- Steps -->
+    <h3>Steps</h3>
+
+    {{ step_formset.management_form }}
+
+    <div id="step-container">
+        {% for form in step_formset %}
+        <div class="step-form">
+            <span class="step-number"></span>
+            {{ form.instruction }} 
+            <button type="button" class="remove-step">❌</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-step">➕ Add Step</button>
+
+    <br><br>
+
+    <button type="submit">Save Recipe</button>
+</form>
+
+
+<script src="{% static 'js/ingredient.js' %}"></script>
+<script src="{% static 'js/steps.js' %}"></script>
+{% endblock %}
