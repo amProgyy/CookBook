@@ -23,7 +23,7 @@ def user_signup(request):
                 password=password
                 )
             login(request, user)
-            return redirect('signup')
+            return redirect('login')
         
     return render(request, 'signup.html')
 
@@ -34,15 +34,13 @@ def user_login(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        if not User.objects.filter(username=username).exists():
-            messages.error(request, "Username does not exist")
+        # user = authenticate(request, username=username, password=password)
+        user = User.objects.get(username=username, password=password)
+        if user is None:
+            messages.error(request, "Incorrect username or password ")
         else:
-            user = authenticate(request, username=username, password=password)
-            if user is None:
-                messages.error(request, "Incorrect password")
-            else:
-                login(request, user)
-                return redirect('signup')
+            login(request, user)
+            return redirect('create_recipe')
 
     return render(request, 'login.html')
 

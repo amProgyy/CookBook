@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Recipe, Ingredient, Tag, Step
 from .forms import RecipeForm, IngredientFormSet, StepFormSet
@@ -49,7 +49,7 @@ def create_recipe(request):
                     step.recipe = recipe
                     step.save()  # step_number auto-filled in model's save()
 
-            return redirect('create_recipe')
+            return redirect('recipe_detail', recipe.id)
 
     else:
         recipe_form = RecipeForm()
@@ -61,3 +61,15 @@ def create_recipe(request):
         'ingredient_formset': ingredient_formset,
         'step_formset': step_formset
     })
+
+@login_required
+def recipe_detail(request, recipe_id):
+    recipe = Recipe.objects.get(id=recipe_id)
+    ingredients = recipe.ingredients.all() 
+    steps = recipe.steps.all()
+    context = {
+        "recipe" : recipe,
+        "ingredients" : ingredients,
+        "steps" : steps,
+    }
+    return render(request, 'recipe_detail.html', context)
