@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Recipe, Ingredient, Tag, Step
 from .forms import RecipeForm, IngredientFormSet, StepFormSet
-
+from decimal import Decimal, ROUND_HALF_UP
 
 @login_required
 def create_recipe(request):
@@ -73,3 +74,31 @@ def recipe_detail(request, recipe_id):
         "steps" : steps,
     }
     return render(request, 'recipe_detail.html', context)
+
+
+
+
+
+def scale_ingredients(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    persons = int(request.GET.get("persons", recipe.number_of_servings))
+
+    scale_factor = Decimal(persons) / Decimal(recipe.number_of_servings)
+    ingredients = Ingredient.objects.filter(recipe=recipe)
+
+    data = []
+    for ing in ingredients:
+        scaled_qty = (ing.quantity * scale_factor).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        data.append({
+            "name": ing.name,
+            "quantity": str(scaled_qty),  # JSON-safe
+            "unit": ing.unit
+        })
+
+    return JsonResponse({"ingredients": data})
+
+

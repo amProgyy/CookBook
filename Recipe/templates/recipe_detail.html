@@ -1,19 +1,28 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 <h1>{{ recipe.title }}</h1>
 <p>{{ recipe.description }}</p>
-<p><strong>Servings:</strong> {{ recipe.number_of_servings }}</p>
+<label>Persons:</label>
+<input type="number"
+       id="personsInput"
+       value="{{ recipe.number_of_servings }}"
+       min="1"
+       data-url="{% url 'scale_ingredients' recipe.id %}">
+<br><br>
 <small>{{ recipe.created_at }}</small>
 
 <h2>Ingredients</h2>
-<ol>
-    {% for ingredient in ingredients %}
-        <li><p>{{ ingredient.name }} - {{ ingredient.quantity }} {{ ingredient.unit }}</p></li>
-    {% empty %}
-        <li>No ingredients listed.</li>
-    {% endfor %}
+<ol id="ingredientsList">
+{% for ing in ingredients %}
+    <li data-base="{{ ing.quantity }}">
+        {{ ing.name }} :
+        <span class="qty">{{ ing.quantity }}</span>
+        {{ ing.unit }} 
+    </li>
+{% endfor %}
 </ol>
+
 
 <h2>Steps</h2>
 <ol>
@@ -23,5 +32,9 @@
         <li>No steps added.</li>
     {% endfor %}
 </ol>
+<script>
+
+</script>
+<script src="{% static 'Recipe/js/detail.js' %}"></script>
 
 {% endblock %}

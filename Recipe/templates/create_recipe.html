@@ -4,6 +4,8 @@
 {% block title %}Create Recipe{% endblock %}
 
 {% block content %}
+
+<section id="content">
 <h2>Create Recipe</h2>
 
 <form method="post">
@@ -52,8 +54,6 @@
 
     <button type="submit">Save Recipe</button>
 </form>
-
-
-<script src="{% static 'js/ingredient.js' %}"></script>
-<script src="{% static 'js/steps.js' %}"></script>
+</section>
+<script src="{% static 'Recipe/js/create_recipe.js' %}"></script>
 {% endblock %}

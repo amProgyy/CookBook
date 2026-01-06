@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from Recipe.models import Recipe
 
 
 
@@ -49,6 +50,19 @@ def user_logout(request):
     logout(request)
     return redirect('login')
             
+
+@login_required
+def my_cookbooks(request):
+    user = request.user
+    recipes = user.recipes.all()
+    # ingredients = user.ingredients.all()
+    # # steps = user.steps.all()
+
+    context = {
+        "recipes" : recipes,
+        
+    }
+    return render(request, "my_cookbooks.html", context)
                 
 
     

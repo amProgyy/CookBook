@@ -16,11 +16,18 @@
         <div class="user-actions">
             {% if user.is_authenticated %}
                 Hi, {{ user.username }} | <a href="{% url 'logout' %}">Logout</a>
+                <br>
+                
+                
             {% else %}
                 <a href="{% url 'login' %}">Login</a> | <a href="{% url 'signup' %}">Sign Up</a>
             {% endif %}
         </div>
     </header>
+    <nav>
+        <a href="{% url 'create_recipe' %}">Write a recipe</a>
+        <a href="{% url 'my_cookbooks' %}">   My Cookbook</a>
+    </nav>
 
 
 {% block content %}{% endblock %}
