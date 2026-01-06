@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -31,19 +31,24 @@ def user_signup(request):
 
 
 def user_login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        # user = authenticate(request, username=username, password=password)
+        if not User.objects.filter(username=username).exists():
+            messages.error(request, "Username does not exist")
+            return render(request, "login.html")
+
         user = User.objects.get(username=username, password=password)
+
         if user is None:
-            messages.error(request, "Incorrect username or password ")
+            messages.error(request, "Incorrect password")
         else:
             login(request, user)
-            return redirect('create_recipe')
+            return redirect("create_recipe")
 
-    return render(request, 'login.html')
+    return render(request, "login.html")
+
 
 @login_required
 def user_logout(request):

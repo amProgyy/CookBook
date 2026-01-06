@@ -79,26 +79,4 @@ def recipe_detail(request, recipe_id):
 
 
 
-def scale_ingredients(request, recipe_id):
-    recipe = get_object_or_404(Recipe, id=recipe_id)
-    persons = int(request.GET.get("persons", recipe.number_of_servings))
-
-    scale_factor = Decimal(persons) / Decimal(recipe.number_of_servings)
-    ingredients = Ingredient.objects.filter(recipe=recipe)
-
-    data = []
-    for ing in ingredients:
-        scaled_qty = (ing.quantity * scale_factor).quantize(
-            Decimal("0.01"),
-            rounding=ROUND_HALF_UP
-        )
-
-        data.append({
-            "name": ing.name,
-            "quantity": str(scaled_qty),  # JSON-safe
-            "unit": ing.unit
-        })
-
-    return JsonResponse({"ingredients": data})
-
 
