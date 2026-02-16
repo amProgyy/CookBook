@@ -17,7 +17,7 @@ def user_signup(request):
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists")
         else:
-            user = User.objects.create(
+            user = User.objects.create_user(
                 username=username, 
                 first_name=first_name,
                 last_name=last_name,
@@ -39,7 +39,7 @@ def user_login(request):
             messages.error(request, "Username does not exist")
             return render(request, "login.html")
 
-        user = User.objects.get(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
 
         if user is None:
             messages.error(request, "Incorrect password")

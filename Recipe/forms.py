@@ -1,31 +1,48 @@
 from django import forms
-from .models import Recipe, Ingredient, Step
-from django.forms import modelformset_factory
+from .models import Recipe, Ingredient, Step,Tag
+from django.forms import inlineformset_factory
 
 class RecipeForm(forms.ModelForm):
-    tag_names = forms.CharField(
-        required=False,
-        label="Tags",
-        help_text="Enter tags separated by commas (e.g. spicy, vegan, quick)",
-        widget=forms.TextInput(
-            attrs={
-                'placeholder': 'spicy, vegan, quick'
-            }
-        )
-    )
 
     class Meta:
         model = Recipe
         fields = [
+            'image',
             'title',
             'description',
             'chefs_note',
             'number_of_servings',
+            'visibility',
+            
         ]
+        exclude = ['tags'] 
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 3}),
-            'chefs_note': forms.Textarea(attrs={'rows': 3}),
-        }
+        'title': forms.TextInput(attrs={
+            'placeholder': 'Recipe Title',
+            'class': 'recipe-title'
+        }),
+
+        'description': forms.Textarea(attrs={
+            'rows': 3,
+            'class': 'recipe-description',
+            'placeholder': 'Brief description of the recipe'
+        }),
+
+        'chefs_note': forms.Textarea(attrs={
+            'rows': 3,
+            'placeholder': "write a secret tip",
+            'class': 'chef-notes'
+        }),
+        'number_of_servings': forms.NumberInput(attrs={
+                'min': 1,
+                'class': 'servings-input'
+            }),
+        'image': forms.ClearableFileInput(attrs={
+                'class': 'image-input',
+                'accept': 'image/*'
+            })
+    }
+
 
 
 
@@ -46,26 +63,25 @@ class IngredientForm(forms.ModelForm):
                 'class': 'ingredient-quantity'
             }),
             'unit': forms.Select(attrs={
-                'placeholder': 'Unit',
-                'class': 'ingredient-unit'
+                'class': 'ingredient-unit',
+                'placeholder': 'Unit'
             }),
         }
 
-IngredientFormSet = modelformset_factory(
+IngredientFormSet = inlineformset_factory(
+    Recipe,
     Ingredient,
     form=IngredientForm,
-     fields=('name', 'quantity', 'unit'),
     extra=1,
     can_delete=True
 )
 
 
 
-
 class StepForm(forms.ModelForm):
     class Meta:
         model = Step
-        fields = ['instruction']  # step_number handled automatically
+        fields = ['instruction', 'image']  # step_number handled automatically
         widgets = {
             'instruction': forms.Textarea(attrs={
                 'placeholder': 'Describe this step...',
@@ -75,7 +91,8 @@ class StepForm(forms.ModelForm):
         }
 
 
-StepFormSet = modelformset_factory(
+StepFormSet = inlineformset_factory(
+    Recipe,
     Step,
     form=StepForm,
     extra=1,

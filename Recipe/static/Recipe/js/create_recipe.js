@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    // --- Ingredients ---
+    // =========================
+    // INGREDIENTS
+    // =========================
+
     const ingContainer = document.getElementById("ingredient-container");
     const ingAddBtn = document.getElementById("add-ingredient");
     const ingTotal = document.getElementById("id_ingredients-TOTAL_FORMS");
@@ -8,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateIngredientNumbers() {
         ingContainer.querySelectorAll(".ingredient-form").forEach((item, i) => {
             const span = item.querySelector(".ingredient-number");
-            if(span) span.textContent = `${i + 1}. `;
+            if (span) span.textContent = `${i + 1}. `;
         });
     }
 
@@ -17,11 +20,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const last = ingContainer.querySelector(".ingredient-form:last-child");
         const newForm = last.cloneNode(true);
 
-        newForm.querySelectorAll("input, select").forEach(input => {
+        newForm.querySelectorAll("input, select, textarea").forEach(input => {
             input.name = input.name.replace(/-\d+-/, `-${count}-`);
             input.id = input.id.replace(/-\d+-/, `-${count}-`);
-            if(input.type !== "checkbox") input.value = "";
-            else input.checked = false;
+
+            if (input.type === "checkbox") {
+                input.checked = false;
+            } else {
+                input.value = "";
+            }
         });
 
         ingContainer.appendChild(newForm);
@@ -29,62 +36,160 @@ document.addEventListener("DOMContentLoaded", function () {
         updateIngredientNumbers();
     });
 
-    ingContainer.addEventListener("click", e => {
-        if(e.target.classList.contains("remove-ingredient")) {
+    ingContainer.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-ingredient")) {
+
             const forms = ingContainer.querySelectorAll(".ingredient-form");
-            if(forms.length > 1){
+
+            if (forms.length > 1) {
+
                 e.target.closest(".ingredient-form").remove();
-                ingTotal.value = forms.length;
+
+                // Recalculate TOTAL_FORMS properly
+                const updatedForms = ingContainer.querySelectorAll(".ingredient-form");
+                ingTotal.value = updatedForms.length;
+
                 updateIngredientNumbers();
             }
         }
     });
 
+
     updateIngredientNumbers();
 
 
-    // --- Steps ---
+    // =========================
+    // STEPS (FORMSET SAFE)
+    // =========================
+
     const stepContainer = document.getElementById("step-container");
-    const stepAddBtn = document.getElementById("add-step");
-    const stepTotal = document.getElementById("id_steps-TOTAL_FORMS");
+    const addStepBtn = document.getElementById("add-step");
+    const totalForms = document.getElementById("id_steps-TOTAL_FORMS");
+    const emptyFormTemplate = document.getElementById("empty-step-form").innerHTML;
 
     function updateStepNumbers() {
-        stepContainer.querySelectorAll(".step-form").forEach((item, i) => {
-            const span = item.querySelector(".step-number");
-            if(span) span.textContent = ` ${i + 1}: `;
-            const hidden = item.querySelector('input[type="hidden"]');
-            if(hidden) hidden.value = i + 1; // step_number
+        const forms = stepContainer.querySelectorAll(".step-form:not([style*='display: none'])");
+        forms.forEach((form, index) => {
+            const number = form.querySelector(".step-number");
+            if (number) number.textContent =  (index + 1) + ".";
         });
     }
 
-    stepAddBtn.addEventListener("click", () => {
-        const count = parseInt(stepTotal.value);
-        const last = stepContainer.querySelector(".step-form:last-child");
-        const newForm = last.cloneNode(true);
+    addStepBtn.addEventListener("click", function () {
 
-        newForm.querySelectorAll('input, textarea').forEach(input => {
-            input.name = input.name.replace(/-\d+-/, `-${count}-`);
-            input.id = input.id.replace(/-\d+-/, `-${count}-`);
-            if(input.tagName === "TEXTAREA") input.value = "";
-            if(input.type === "hidden") input.value = count + 1;
-        });
+        let formIndex = parseInt(totalForms.value);
+
+        let newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formIndex);
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = newFormHtml;
+
+        const newForm = tempDiv.firstElementChild;
+
+        // CLEAR FILE INPUT SAFELY
+        const fileInput = newForm.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.value = "";
+        }
 
         stepContainer.appendChild(newForm);
-        stepTotal.value = count + 1;
+
+        totalForms.value = formIndex + 1;
+
         updateStepNumbers();
     });
 
-    stepContainer.addEventListener("click", e => {
-        if(e.target.classList.contains("remove-step")){
-            const forms = stepContainer.querySelectorAll(".step-form");
-            if(forms.length > 1){
-                e.target.closest(".step-form").remove();
-                stepTotal.value = forms.length;
-                updateStepNumbers();
+    stepContainer.addEventListener("click", function (e) {
+
+        if (e.target.classList.contains("remove-step")) {
+
+            const form = e.target.closest(".step-form");
+            const deleteInput = form.querySelector('input[type="checkbox"][name$="-DELETE"]');
+
+            if (deleteInput) {
+                deleteInput.checked = true;
+                form.style.display = "none";
             }
+
+            updateStepNumbers();
         }
     });
 
-    updateStepNumbers();
 
+    updateStepNumbers();
+});
+
+
+    // =========================
+    // RECIPE IMAGE
+    // =========================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    const input = document.querySelector(".image-input");
+    const preview = document.getElementById("image-preview");
+
+    if (input) {
+        input.addEventListener("change", function() {
+            const file = this.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                }
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = "none";
+            }
+        });
+    }
+
+});
+
+
+    // =========================
+    // STEP IMAGE
+    // =========================
+
+document.addEventListener("change", function(e) {
+
+    if (e.target.type === "file") {
+
+        const label = e.target.closest(".step-upload-label");
+        const preview = label.querySelector(".step-preview");
+        const placeholder = label.querySelector(".upload-placeholder");
+
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                preview.src = event.target.result;
+                preview.style.display = "block";
+                placeholder.style.display = "none";
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+});
+
+    // =========================
+    // SELECT2 TAG
+    // =========================
+
+
+$(document).ready(function() {
+    $('.tag-select').select2({
+        placeholder: "Select or add tags",
+        tags: true,              // allows new tags
+        tokenSeparators: [','],  // press comma to create tag
+        allowClear: true
+    });
 });

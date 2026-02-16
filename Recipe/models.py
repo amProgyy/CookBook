@@ -20,18 +20,31 @@ class Recipe(models.Model):
     description = models.TextField(blank=True)
     chefs_note = models.TextField(blank=True)
     number_of_servings = models.PositiveIntegerField()
-
     tags = models.ManyToManyField(Tag, blank=True, related_name='recipes')
-
+    image = models.ImageField(upload_to='recipes/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    PUBLIC = 'public'
+    PRIVATE = 'private'
+
+    VISIBILITY_CHOICES = [
+        (PUBLIC, 'Public'),
+        (PRIVATE, 'Private'),
+    ]
+
+    visibility = models.CharField(
+        max_length=10,
+        choices=VISIBILITY_CHOICES,
+        default=PUBLIC
+    )
 
 
 
 class Ingredient(models.Model):
 
     UNIT_CHOICES = [
+        ('', 'Select Unit'),
         ('g', 'Gram'),
         ('kg', 'Kilogram'),
         ('ml', 'Milliliter'),
@@ -65,6 +78,12 @@ class Step(models.Model):
     step_number = models.PositiveIntegerField()
     instruction = models.TextField()
 
+    image = models.ImageField(
+    upload_to='steps/',
+    blank=True,
+    null=True
+)
+
     class Meta:
         ordering = ['step_number']
         unique_together = ('recipe', 'step_number')
@@ -72,12 +91,16 @@ class Step(models.Model):
    
 
     def save(self, *args, **kwargs):
+        # Auto-assign step number if not provided
         if not self.step_number:
-            # Get the current maximum step number for this recipe
-            max_step = Step.objects.filter(recipe=self.recipe).aggregate(
-                Max('step_number')
-            )['step_number__max'] or 0
+            max_step = Step.objects.filter(recipe=self.recipe).aggregate(Max('step_number'))['step_number__max'] or 0
             self.step_number = max_step + 1
         super().save(*args, **kwargs)
 
+        # Optional: renumber all steps to prevent gaps
+        steps = Step.objects.filter(recipe=self.recipe).order_by('step_number')
+        for idx, step in enumerate(steps, start=1):
+            if step.step_number != idx:
+                step.step_number = idx
+                step.save(update_fields=['step_number'])
 

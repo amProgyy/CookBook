@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Cookbook{% endblock %}</title>
+     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
  <!-- Header -->
-    <header style="display:flex; justify-content:space-between; align-items:center; padding:5px; background:#f5f5f5; border-bottom:1px solid #ddd;">
-        <div class="logo">
+{% comment %} <header style="display:flex; justify-content:space-between; align-items:center; height:100px; padding:5px 20px; background:#fff; border-bottom:1px solid #ddd; position:sticky; top:0;">
+        {% comment %} <div class="logo">
             <h1  style="text-decoration:none; font-weight:bold; font-size:2rem;">👨🏼‍🍳Cookbook</h1>
-        </div>
+        </div> {% endcomment %}
 
         <!-- User actions -->
-        <div class="user-actions">
+        {% comment %} <div class="user-actions">
             {% if user.is_authenticated %}
                 Hi, {{ user.username }} | <a href="{% url 'logout' %}">Logout</a>
                 <br>
@@ -22,12 +23,12 @@
             {% else %}
                 <a href="{% url 'login' %}">Login</a> | <a href="{% url 'signup' %}">Sign Up</a>
             {% endif %}
-        </div>
-    </header>
-    <nav>
+        </div> 
+    </header> {% endcomment %}
+    {% comment %} <nav>
         <a href="{% url 'create_recipe' %}">Write a recipe</a>
         <a href="{% url 'my_cookbooks' %}">   My Cookbook</a>
-    </nav>
+    </nav> {% endcomment %}
 
 
 {% block content %}{% endblock %}
