@@ -9,9 +9,6 @@ body {
     margin: 0;
 }
 
-/* =========================
-   Header
-========================= */
 
 
 
@@ -47,7 +44,7 @@ body {
    Title
 ========================= */
 
-.recipe-title input {
+.recipe-title {
     text-transform: capitalize;
     font-family: 'Cormorant Garamond', serif;
     font-size: 56px;
@@ -59,10 +56,7 @@ body {
     width: 80%;
 }
 
-.recipe-title::placeholder {
-    text-transform: none;
-    color: #999;
-}
+
 
 
 
@@ -89,12 +83,18 @@ body {
 /* =========================
    Ingredient & Step Rows
 ========================= */
-.ingredient-form,
+.ingredient-section,
 .step-form {
     display: flex;
-    align-items: center;
+    position: relative;
     gap: 12px;
     margin-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    padding: 6px;
+    font-size: 20px;
+    font-style: normal;
+    padding-bottom: 10px;
     
 }
 
@@ -107,7 +107,7 @@ body {
     background: transparent;
     padding: 6px;
     font-size: 20px;
-    font-style: none;
+    font-style: normal;
     padding-bottom: 10px;
     align-items: center;
     
@@ -223,10 +223,6 @@ servings {
     display: none;
 }
 
-input[type="file"] {
-    display: none;
-}
-
 .upload-container {
     width: 300px;
 }
@@ -315,7 +311,7 @@ Step image */
     height: 100px;       /* fixed height */
     object-fit: cover;
     border-radius: 10px;
-    display:none;
+    display: none;
     margin-top: 10px;
 }
 
@@ -328,7 +324,6 @@ Step image */
 label,
 .section-card span,
 h3  {
-    border: none;
     font-family: 'Georgia', serif;
     font-size: 20px;
     font-style: italic;
@@ -336,10 +331,8 @@ h3  {
 }
 
 
-.chef-notes textarea,
-.recipe-description textarea {
-    font-style: normal;
-    color: black;
+.chef-notes
+.recipe-description {
     width: 80%;
     min-height: 80px;
     font-size: 17px;
@@ -359,6 +352,7 @@ h3  {
 
     background-attachment: local; 
 }
+
 
 
 

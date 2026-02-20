@@ -9,10 +9,21 @@ body {
     margin: 0;
 }
 
+
 /* =========================
    Header
 ========================= */
-
+.head {
+    position: fixed;
+    height: 90px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    top: 0;
+    z-index: 1000;
+    background: #FFFDF2;
+    border-bottom: 1px solid #f5f0f0;
+}
 
 
 /* =========================
@@ -28,10 +39,6 @@ body {
     padding: 20px;
 }
 
-
-/* =========================
-   Left & Right Sections
-========================= */
 .recipe-left {
     flex: 2;
 }
@@ -39,14 +46,12 @@ body {
 .recipe-right {
     flex: 1;
     padding-left: 20px;
-   
 }
 
 
 /* =========================
    Title
 ========================= */
-
 .recipe-title input {
     text-transform: capitalize;
     font-family: 'Cormorant Garamond', serif;
@@ -59,15 +64,14 @@ body {
     width: 80%;
 }
 
-.recipe-title::placeholder {
+.recipe-title input::placeholder {
     text-transform: none;
     color: #999;
 }
 
 
-
 /* =========================
-   Section Card Style
+   Section Card
 ========================= */
 .section-card {
     background: white;
@@ -76,8 +80,6 @@ body {
     box-shadow: 0 8px 18px rgba(0,0,0,0.05);
     margin-bottom: 35px;
     transition: 0.3s ease;
-    align-items: center;
-    
 }
 
 .section-card:hover {
@@ -95,7 +97,6 @@ body {
     align-items: center;
     gap: 12px;
     margin-bottom: 12px;
-    
 }
 
 .ingredient-form input,
@@ -107,38 +108,34 @@ body {
     background: transparent;
     padding: 6px;
     font-size: 20px;
-    font-style: none;
+    font-style: normal;
     padding-bottom: 10px;
-    align-items: center;
-    
-    
+}
+
+
+.step-instruction{
+    font-style: normal;
 }
 
 .step-form textarea {
-    padding-bottom: 20px;
     background: transparent;
-    padding: 6px;
-    padding-right: 20px;
     border: none;
     outline: none;
     width: 60%;
     min-height: 80px;
     font-size: 20px;
-    line-height: 28px;   /* IMPORTANT */
-    resize: none;       /* prevent manual resize */
-    outline: none;
-    background-color: transparent;
-    /* Blue lines */
+    line-height: 28px;
+    resize: none;
+    font-style: none;
+
     background-image: repeating-linear-gradient(
         to bottom,
         transparent,
         transparent 27px,
         #e4e4e4 28px
-    
     );
     background-size: 100% 28px;
-
-    background-attachment: local; 
+    background-attachment: local;
 }
 
 
@@ -185,48 +182,8 @@ body {
 
 
 /* =========================
-   Header
+   Upload (Main Recipe Image)
 ========================= */
-.head {
-    position: fixed;
-    height:90px;
-    width:100%;
-    display: flex;
-    justify-content: space-between;
-    top: 0;
-    z-index: 1000;
-    background: #FFFDF2;
-    border-bottom: 1px solid #f5f0f0;
-
-}
-
-
-
-/* =========================
-   New section
-========================= */
-.new-section {
-    display: flex;
-}
-
-.card-small-card {
-    flex: 1;
-}
-
-servings {
-    flex: 1;
-}
-/* =========================
-   Photo Upload Box
-========================= */
-#id_image {
-    display: none;
-}
-
-input[type="file"] {
-    display: none;
-}
-
 .upload-container {
     width: 300px;
 }
@@ -261,25 +218,21 @@ input[type="file"] {
     line-height: 1;
 }
 
-.upload-content p {
-    margin-top: 8px;
-    font-size: 14px;
-}
-
 .preview-img {
     position: absolute;
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.image-input {
     display: none;
 }
 
 
-/* 
-Step image */
-#id_image {
-    display: none;
-}
+/* =========================
+   Step Image Upload
+========================= */
 .step-image-box {
     margin-top: 10px;
 }
@@ -311,30 +264,27 @@ Step image */
 }
 
 .step-preview {
-    width: 100px;        /* reduce width */
-    height: 100px;       /* fixed height */
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 10px;
-    display:none;
     margin-top: 10px;
 }
 
 
 /* =========================
- Chef Notes and Description  
+   Chef Notes & Description
 ========================= */
 .chef-notes,
 .recipe-description,
 label,
 .section-card span,
-h3  {
-    border: none;
+h3 {
     font-family: 'Georgia', serif;
     font-size: 20px;
     font-style: italic;
     color: #6d253b;
 }
-
 
 .chef-notes textarea,
 .recipe-description textarea {
@@ -343,47 +293,42 @@ h3  {
     width: 80%;
     min-height: 80px;
     font-size: 17px;
-    line-height: 28px;   /* IMPORTANT */
+    line-height: 28px;
     resize: none;
     outline: none;
+    border: none;
     background-color: #FFFDF2;
-    /* Blue lines */
+
     background-image: repeating-linear-gradient(
         to bottom,
         transparent,
         transparent 27px,
         #e4e4e4 28px
     );
-  /* align with padding-top */
     background-size: 100% 28px;
-
-    background-attachment: local; 
+    background-attachment: local;
 }
-
 
 
 /* =========================
    Servings
 ========================= */
 .servings {
-    font-weight: 500;
-    text-align: center; 
     font-family: 'Georgia', serif;
     font-size: 20px;
     font-style: italic;
     color: #6d253b;
-    
+    text-align: center;
 }
 
-.servings input{
+.servings input {
     border: none;
     outline: none;
     border-bottom: 1px solid #ddd;
     background: transparent;
-    text-align: center; 
-    max-width: 70px;  /* prevent too big on large screens */
+    text-align: center;
+    max-width: 70px;
     min-width: 20px;
-    width: 30;
 }
 
 
@@ -400,30 +345,66 @@ h3  {
     transition: 0.2s ease;
 }
 
-.remove-ingredient:hover,
-.remove-step:hover {
+.remove-step:hover,
+.remove-ingredient:hover {
     color: red;
 }
 
+
 /* =========================
-   Visibility
+   Responsive
 ========================= */
+@media (max-width: 900px) {
 
-.card-small-card select{
-        border: none;
-    outline: none;
-    border-bottom: 1px solid #ddd;
-    background: transparent;
-    padding: 6px;
-    font-size: 15px;
+    .recipe-page {
+        padding: 20px 5%;
+        gap: 20px;
+    }
 
+    .recipe-flex {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .recipe-right {
+        padding-left: 0;
+    }
+
+    .recipe-title input {
+        width: 100%;
+        font-size: clamp(24px, 5vw, 56px);
+    }
+
+    .ingredient-form,
+    .step-form {
+        flex-wrap: wrap;
+    }
+
+    .ingredient-form input,
+    .ingredient-form select,
+    .step-form input,
+    .step-form textarea {
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .step-upload-label,
+    .upload-box {
+        width: 100%;
+    }
+
+    .step-preview,
+    .preview-img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .save-btn {
+        right: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
 }
-
-
-
-/* =========================
-   TAGS (Detail Page)
-========================= */
 
 /* Tag Chip */
 .tag-select {
@@ -441,95 +422,30 @@ tag-select:focus {
     border: none;
 }
 
-
-
-
-
-
 /* =========================
-   Responsive
+   Visibility
 ========================= */
-@media (max-width: 900px) {
-    .recipe-flex {
-        flex-direction: column;
-    }
 
-    .save-btn {
-        right: 30px;
-    }
+.card-small-card select{
+        border: none;
+    outline: none;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    padding: 6px;
+    font-size: 15px;
+
+}
+/* =========================
+   New section
+========================= */
+.new-section {
+    display: flex;
 }
 
-
-@media (max-width: 900px) {
-    .recipe-page {
-        padding: 20px 5%; /* reduce padding for smaller screens */
-        gap: 20px;
-    }
-
-    .recipe-flex {
-        flex-direction: column; /* stack left and right columns */
-        padding: 10px;
-    }
-
-    .recipe-right {
-        padding-left: 0; /* remove left padding */
-    }
+.card-small-card {
+    flex: 1;
 }
 
-@media (max-width: 900px) {
-    .recipe-title input {
-        width: 100%;  /* full width of container */
-        font-size: clamp(24px, 5vw, 56px); /* scales with screen */
-    }
+servings {
+    flex: 1;
 }
-
-@media (max-width: 900px) {
-    .ingredient-form,
-    .step-form {
-        flex-wrap: wrap; /* wrap elements instead of shrinking */
-    }
-
-    .ingredient-form input,
-    .ingredient-form select,
-    .step-form input,
-    .step-form textarea {
-        width: 100%; /* take full width */
-        font-size: 16px;
-    }
-
-    .step-form textarea {
-        width: 100%;
-    }
-}
-
-@media (max-width: 900px) {
-    .upload-container,
-    .upload-box,
-    .step-upload-label {
-        width: 100%;  /* full width */
-        max-width: 100%;
-        margin: 0 auto;
-    }
-
-    .step-preview,
-    .preview-img {
-        width: 80px;
-        height: 80px;
-    }
-}
-
-@media (max-width: 900px) {
-    .servings input {
-        width: 50%;
-        max-width: 50px;
-    }
-}
-
-@media (max-width: 900px) {
-    .save-btn {
-        right: 10px;
-        padding: 10px 14px;
-        font-size: 14px;
-    }
-}
-

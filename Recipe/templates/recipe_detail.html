@@ -72,6 +72,7 @@
 
     <button onclick="deleteRecipe({{ recipe.id }})">Delete</button>
 </div>
+<a href="{% url 'edit_recipe' recipe_id=recipe.id %}"> edit </a>
 <!-- JS -->
 <script src="{% static 'Recipe/js/detail.js' %}"></script>
 <script>

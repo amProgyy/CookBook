@@ -2,7 +2,7 @@
 {% load static %}
 <head>
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'Recipe/css/create_recipe.css' %}">
+<link rel="stylesheet" href="{% static 'Recipe/css/edit_recipe.css' %}">
 {% endblock %}
 </head>
 {% block content %}
@@ -27,7 +27,10 @@
                 <label>Tags:</label>
                 <select name="tags" class="tag-select" multiple>
                     {% for tag in popular_tags %}
-                        <option value="{{ tag.id }}">{{ tag.name }}</option>
+                        <option value="{{ tag.id }}"
+                            {% if tag in form.instance.tags.all %}selected{% endif %}>
+                            {{ tag.name }}
+                        </option>
                     {% endfor %}
                 </select>
 
@@ -67,9 +70,16 @@
                     <label for="id_image" class="upload-box">
                         <div class="upload-content">
                             <div class="plus-icon">+</div>
-                            <p>Add Recipe Image</p>
+                            
                         </div>
-                        <img id="image-preview" class="preview-img" />
+                            {% if form.instance.image %}
+                                <img id="image-preview"
+                                    src="{{ form.instance.image.url }}"
+                                    class="preview-img" />
+                            {% else %}
+                                <p>Add Recipe Image</p>
+                                <img id="image-preview" class="preview-img" />
+                            {% endif %}
                     </label>
 
                     {{ form.image }}
@@ -87,6 +97,7 @@
                 {% for form in ingredient_formset %}
                 <div class="ingredient-form">
                     <span class="ingredient-number"></span>
+                    {{ form.id }} 
                     {{ form.name }}
                     {{ form.quantity }}
                     {{ form.unit }}
@@ -103,30 +114,40 @@
             {{ step_formset.management_form }}
             <div id="step-container">
                 {% for form in step_formset %}
-                <div class="step-form">
-                    <span class="step-number"></span>
-                    {{ form.instruction }}
-                    <div class="step-image-box">
-                        <label class="step-upload-label">
-                            {{ form.image }}
-                            <div class="upload-placeholder">
-                                ➕ Add Step Image
-                            </div>
-                            <img class="step-preview">
-                        </label>
+                    <div class="step-form">
+                        <span class="step-number"></span>
+                        {{ form.id }}
+                        {{ form.instruction }}
+
+                        <div class="step-image-box">
+                            <label class="step-upload-label">
+
+                                {{ form.image }}   <!-- ✅ FIXED -->
+
+                                {% if form.instance.image %}
+                                    <img src="{{ form.instance.image.url }}"
+                                        class="step-preview" >
+                                {% else %}
+                                    <div class="upload-placeholder">
+                                        ➕ Add Step Image
+                                    </div>
+                                    <img class="step-preview" style="display:none;">
+                                {% endif %}
+
+                            </label>
+                        </div>
+
+                        <div style="display:none;">{{ form.DELETE }}</div>
+                        <button type="button" class="remove-step">&times;</button>
                     </div>
-                    <div style="display:none;">{{ form.DELETE }}</div>
-                    <button type="button" class="remove-step">&times;</button>
-                </div>
                 {% endfor %}
+
             </div>
             <button type="button" id="add-step" class="add-btn">+ Add Step</button>
         </div>
         <div class="head">
             <button type="submit" class="save-btn">SAVE RECIPE</button>
         </div>
-        <!-- Save Button -->
-        <button type="submit" class="save-btn">SAVE RECIPE</button>
 
     </form>
 </div>
@@ -135,20 +156,24 @@
 <div id="empty-step-form" style="display:none;">
     <div class="step-form">
         <span class="step-number"></span>
+        {{ step_formset.empty_form.id }}
         {{ step_formset.empty_form.instruction }}
+
         <div class="step-image-box">
             <label class="step-upload-label">
-            {{ step_formset.empty_form.image }}
+                {{ step_formset.empty_form.image }}
                 <div class="upload-placeholder">
                     ➕ Add Step Image
                 </div>
-                <img class="step-preview">
+                <img class="step-preview" style="display:none;">
             </label>
         </div>
         <div style="display:none;">{{ step_formset.empty_form.DELETE }}</div>
+        
         <button type="button" class="remove-step">&times;</button>
     </div>
 </div>
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

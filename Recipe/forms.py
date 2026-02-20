@@ -37,9 +37,9 @@ class RecipeForm(forms.ModelForm):
                 'min': 1,
                 'class': 'servings-input'
             }),
-        'image': forms.ClearableFileInput(attrs={
+        'image': forms.FileInput(attrs={
                 'class': 'image-input',
-                'accept': 'image/*'
+                'accept': 'image/*',
             })
     }
 
@@ -87,7 +87,9 @@ class StepForm(forms.ModelForm):
                 'placeholder': 'Describe this step...',
                 'rows': 2,
                 'class': 'step-instruction'
+
             }),
+            'image': forms.FileInput(),
         }
 
 
