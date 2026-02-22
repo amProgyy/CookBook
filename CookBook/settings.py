@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'User',
     'Recipe',
-    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -134,9 +133,6 @@ import os
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # your app static folder
-]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # production folder
 

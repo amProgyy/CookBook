@@ -1,20 +1,19 @@
 # Virtual Environment
-venv/
 venv4cb/
-env/
+venv/
 
-# Python
+# Python cache
 __pycache__/
 *.pyc
-*.pyo
 
-# Django
+# Database
 db.sqlite3
-media/
-staticfiles/
 
-# VS Code
-.vscode/
+# Media uploads
+media/
+
+# Collected static files
+staticfiles/
 
 # Environment variables
 .env
