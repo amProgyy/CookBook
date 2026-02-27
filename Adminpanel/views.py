@@ -119,9 +119,16 @@ def add_tag(request):
         if tag_name:
             tag, created = Tag.objects.get_or_create(name=tag_name)
             if created:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True, 'tag_id': tag.id, 'tag_name': tag.name, 'message': f'Tag "{tag.name}" added successfully.'})
                 messages.success(request, f'Tag "{tag.name}" added successfully.')
             else:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'message': f'Tag "{tag_name}" already exists.'})
                 messages.error(request, f'Tag "{tag_name}" already exists.')
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': 'Tag name cannot be empty.'})
     return redirect('manage_recipes')
 
 @user_passes_test(is_admin, login_url='/adminpanel/login/')

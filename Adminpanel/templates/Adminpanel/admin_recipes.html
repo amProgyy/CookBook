@@ -64,18 +64,19 @@
     <div class="admin-section">
         <h2 class="admin-section-title">Tag Management</h2>
 
-        <form method="POST" action="{% url 'admin_add_tag' %}" class="admin-search-form" style="margin-bottom: 30px;">
+        <form id="add-tag-form" method="POST" action="{% url 'admin_add_tag' %}" class="admin-search-form"
+            style="margin-bottom: 30px;">
             {% csrf_token %}
-            <input type="text" name="tag_name" placeholder="Enter new tag name..." required>
+            <input type="text" id="id_tag_name" name="tag_name" placeholder="Enter new tag name..." required>
             <button type="submit">Add Tag</button>
         </form>
 
-        {% if all_tags %}
-        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <div id="tag-container" style="display: flex; flex-wrap: wrap; gap: 10px;">
             {% for tag in all_tags %}
             <div id="tag-item-{{ tag.id }}"
                 style="background: #f1ece5; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid #E0DCD9;">
-                <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">{{ tag.name }}</span>
+                <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">{{ tag.name
+                    }}</span>
                 <form method="POST" action="{% url 'admin_delete_tag' tag.id %}" class="delete-tag-form"
                     style="margin: 0;">
                     {% csrf_token %}
@@ -83,11 +84,10 @@
                         style="background: none; border: none; color: #E63946; cursor: pointer; font-size: 16px; padding: 0;">&times;</button>
                 </form>
             </div>
+            {% empty %}
+            <p id="no-tags-msg" style="color: #666; font-style: italic;">No tags available.</p>
             {% endfor %}
         </div>
-        {% else %}
-        <p style="color: #666; font-style: italic;">No tags available.</p>
-        {% endif %}
     </div>
 
 </div>
@@ -125,9 +125,8 @@
             });
         });
 
-        // Handle tag deletion without reload
-        const tagForms = document.querySelectorAll('.delete-tag-form');
-        tagForms.forEach(form => {
+        // Function to bind delete event to a tag form wrapper
+        function bindTagDeleteEvent(form) {
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 if (!confirm('Are you sure you want to delete this tag?')) return;
@@ -152,7 +151,66 @@
                     })
                     .catch(err => console.error("Error deleting tag:", err));
             });
+        }
+
+        // Handle tag deletion without reload
+        const tagForms = document.querySelectorAll('.delete-tag-form');
+        tagForms.forEach(form => {
+            bindTagDeleteEvent(form);
         });
+
+        // Handle tag addition without reload
+        const addTagForm = document.getElementById('add-tag-form');
+        if (addTagForm) {
+            addTagForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const url = this.action;
+                const formData = new FormData(this);
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const noTagsMsg = document.getElementById('no-tags-msg');
+                            if (noTagsMsg) noTagsMsg.remove();
+
+                            const container = document.getElementById('tag-container');
+                            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                            const newTagHtml = `
+                        <div id="tag-item-${data.tag_id}"
+                            style="background: #f1ece5; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid #E0DCD9;">
+                            <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">${data.tag_name}</span>
+                            <form method="POST" action="/adminpanel/delete-tag/${data.tag_id}/" class="delete-tag-form"
+                                style="margin: 0;">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                                <button type="submit"
+                                    style="background: none; border: none; color: #E63946; cursor: pointer; font-size: 16px; padding: 0;">&times;</button>
+                            </form>
+                        </div>
+                        `;
+
+                            container.insertAdjacentHTML('beforeend', newTagHtml);
+
+                            // Bind event listener to the newly created form
+                            const newlyAddedForm = container.querySelector(`#tag-item-${data.tag_id} .delete-tag-form`);
+                            bindTagDeleteEvent(newlyAddedForm);
+
+                            // Clear input
+                            document.getElementById('id_tag_name').value = '';
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(err => console.error("Error adding tag:", err));
+            });
+        }
     });
 </script>
 {% endblock %}
