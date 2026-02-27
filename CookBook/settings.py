@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'User',
     'Recipe',
+    'Adminpanel',
 ]
 
 MIDDLEWARE = [
@@ -130,9 +131,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 import os
-
 STATIC_URL = '/static/'
-
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # production folder
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 

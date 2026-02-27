@@ -1,0 +1,69 @@
+{% extends 'Adminpanel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard | Cookbook{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <h1 class="admin-header">Admin Dashboard</h1>
+
+    <!-- 1. PENDING RECIPES QUEUE -->
+    <div class="admin-section">
+        <h2 class="admin-section-title">Pending Recipe Requests</h2>
+        {% if pending_recipes %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for recipe in pending_recipes %}
+                <tr>
+                    <td><strong>{{ recipe.title }}</strong></td>
+                    <td>@{{ recipe.author.username }}</td>
+                    <td>{{ recipe.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'recipe_detail' recipe.id %}" target="_blank"
+                            class="btn-admin btn-view">View</a>
+
+                        <form method="POST" action="{% url 'admin_approve_recipe' recipe.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-admin btn-approve">Approve</button>
+                        </form>
+
+                        <button class="btn-admin btn-reject"
+                            onclick="toggleRejectForm('{{ recipe.id }}')">Reject</button>
+
+                        <div id="reject-form-{{ recipe.id }}" class="reject-form">
+                            <form method="POST" action="{% url 'admin_reject_recipe' recipe.id %}">
+                                {% csrf_token %}
+                                <textarea name="rejection_reason" rows="3" placeholder="Reason for rejection..."
+                                    required></textarea><br>
+                                <button type="submit" class="btn-admin btn-reject" style="width: 100%;">Confirm
+                                    Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #666; font-style: italic;">No pending recipe requests at
+            the moment.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'Adminpanel/js/admin_dashboard.js' %}"></script>
+{% endblock %}
