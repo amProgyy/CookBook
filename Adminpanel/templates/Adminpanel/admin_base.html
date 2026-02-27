@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin | Cookbook{% endblock %}</title>
+
+    <!-- Google Fonts for SavoryWise Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Base Styles -->
+    <link rel="stylesheet" href="{% static 'Recipe/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'Adminpanel/css/admin_style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Vertical Sidebar specifically for Admin -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-logo">
+            A<span>D</span>
+        </a>
+
+        <!-- Main Links -->
+        <div class="sidebar-links">
+            <a href="{% url 'admin_dashboard' %}"
+                class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                data-tooltip="Recipe Approvals">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+            </a>
+
+            <a href="{% url 'manage_users' %}"
+                class="sidebar-link {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}"
+                data-tooltip="Manage Users">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </a>
+
+            <a href="{% url 'manage_recipes' %}"
+                class="sidebar-link {% if request.resolver_match.url_name == 'manage_recipes' %}active{% endif %}"
+                data-tooltip="Manage Recipes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                </svg>
+            </a>
+
+            <a href="{% url 'home_feed' %}" class="sidebar-link" data-tooltip="Leave Admin Portal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- User Actions (Bottom) -->
+        <div class="sidebar-links sidebar-bottom">
+            {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}" class="sidebar-link" data-tooltip="Logout ({{ user.username }})">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+            </a>
+            {% else %}
+            <a href="{% url 'admin_login' %}"
+                class="sidebar-link {% if request.resolver_match.url_name == 'admin_login' %}active{% endif %}"
+                data-tooltip="Admin Login">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content wrapper to offset from sidebar -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{% static 'Recipe/js/heading_hover.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

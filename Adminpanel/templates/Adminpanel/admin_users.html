@@ -1,0 +1,67 @@
+{% extends 'Adminpanel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Users | Admin | Cookbook{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <h1 class="admin-header">Manage Users</h1>
+
+    <div class="admin-section">
+        <h2 class="admin-section-title">All Users</h2>
+
+        <form method="GET" action="{% url 'manage_users' %}" class="admin-search-form">
+            <input type="text" name="user_search" placeholder="Search users by username or email..."
+                value="{{ user_search }}">
+            <button type="submit">Search</button>
+        </form>
+
+        {% if all_users %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Date Joined</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for target_user in all_users %}
+                <tr>
+                    <td><strong>@{{ target_user.username }}</strong></td>
+                    <td>{{ target_user.email }}</td>
+                    <td>{{ target_user.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        {% if target_user.is_superuser or target_user.is_staff %}
+                        <span class="badge badge-approved" style="background:#6c757d;">Admin</span>
+                        {% else %}
+                        User
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not target_user.is_superuser or request.user == target_user %}
+                        <form method="POST" action="{% url 'admin_delete_user' target_user.id %}"
+                            onsubmit="return confirm('WARNING: Are you sure you want to delete user @{{ target_user.username }}? This action cannot be undone and will delete all their recipes.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-admin btn-danger">Delete User</button>
+                        </form>
+                        {% else %}
+                        <span style="color:#999;font-size:12px;">Cannot Delete Superuser</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #666; font-style: italic; margin-top: 15px;">No results found for your user search.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
