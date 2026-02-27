@@ -1,0 +1,59 @@
+{% load static %}
+<li class="cookbook-card" id="recipe-{{ recipe.id }}">
+    <a href="{% url 'recipe_detail' recipe.id %}" class="cookbook-image-wrapper">
+        {% if recipe.image %}
+        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="cookbook-image">
+        {% else %}
+        <div class="cookbook-image-placeholder">No Image Available</div>
+        {% endif %}
+    </a>
+
+    <div class="cookbook-card-content">
+        {% if show_status %}
+        <div style="margin-bottom: 15px;">
+            {% if recipe.status == 'pending' %}
+            <span class="badge"
+                style="background:#F4A261; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white;">Pending
+                Approval</span>
+            {% elif recipe.status == 'approved' %}
+            <span class="badge"
+                style="background:#4CAF50; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white;">Approved</span>
+            {% elif recipe.status == 'rejected' %}
+            <span class="badge"
+                style="background:#E63946; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white;">Rejected</span>
+            <p style="margin-top: 6px; font-size: 12px; color: #E63946; font-family: 'Quicksand', sans-serif;">
+                <strong>Reason:</strong> {{ recipe.rejection_reason }}
+            </p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if is_favorites_page %}
+        <span class="cookbook-author">{{ recipe.author.username }}</span>
+        {% endif %}
+        <h2 class="cookbook-title">
+            <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
+        </h2>
+
+        <div class="cookbook-footer">
+            <div>
+                <span class="servings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    {{ recipe.number_of_servings }} Servings
+                </span>
+            </div>
+            {% if recipe.author == request.user %}
+            <div class="cookbook-actions">
+                <a href="{% url 'edit_recipe' recipe_id=recipe.id %}" class="btn-edit">Edit</a>
+                <button class="btn-delete" onclick="deleteRecipe('{{ recipe.id }}')">Delete</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</li>

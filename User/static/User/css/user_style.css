@@ -1,0 +1,172 @@
+/* =========================
+   Background (inherited from Recipe theme)
+========================= */
+body {
+    background-color: #F4F1EA;
+    background-image: radial-gradient(rgba(62, 47, 40, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    font-family: 'Quicksand', sans-serif;
+    color: #3E2F28;
+    margin: 0;
+}
+
+/* =========================
+   Authentication Layout (Login / Signup)
+========================= */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+.auth-card {
+    background: #FFFFFF;
+    border: 1px solid #E0DCD9;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
+    padding: 40px;
+    box-shadow: 0 4px 20px -2px rgba(62, 47, 40, 0.15);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.auth-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    color: #3E2F28;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* =========================
+   Form Inputs
+========================= */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form input[type="email"] {
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    padding: 10px 5px;
+    font-size: 18px;
+    font-family: 'Quicksand', sans-serif;
+    transition: border-color 0.3s ease;
+}
+
+.auth-form input::placeholder {
+    color: #999;
+}
+
+.auth-form input:focus {
+    border-bottom-color: #C88468;
+}
+
+/* =========================
+   Buttons
+========================= */
+.auth-btn {
+    background: #C88468;
+    color: white;
+    border: none;
+    padding: 14px 26px;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px -2px rgba(62, 47, 40, 0.15);
+    transition: 0.2s ease;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.auth-btn:hover {
+    background: #B36D51;
+}
+
+/* =========================
+   Links & Messages
+========================= */
+.auth-links {
+    margin-top: 25px;
+    font-size: 15px;
+    color: #666;
+}
+
+.auth-links a {
+    color: #C88468;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.auth-links a:hover {
+    color: #B36D51;
+    text-decoration: underline;
+}
+
+.error-messages {
+    color: #C88468;
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.error-messages p {
+    margin: 5px 0;
+}
+
+
+
+/* =========================
+   Password Toggle
+========================= */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+    padding-right: 40px;
+    /* Space for the eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.toggle-password:hover,
+.toggle-password.active {
+    color: #C88468;
+}
+
+.toggle-password svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}

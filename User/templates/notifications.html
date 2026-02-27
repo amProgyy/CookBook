@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications | Cookbook{% endblock %}
+
+{% block content %}
+<div class="feed-page" style="max-width: 600px; margin: 40px auto; padding: 0 15px;">
+    <h1 style="font-family: 'Playfair Display', serif; color: #3E2F28;">Your Notifications</h1>
+    <div
+        style="background: #FFFFFF; border: 1px solid #E0DCD9; border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px; padding: 20px; box-shadow: 0 4px 20px -2px rgba(62, 47, 40, 0.15);">
+        {% for note in notifications %}
+        <div style="padding: 15px 0; border-bottom: 1px dashed #E0DCD9;">
+            {% if not note.is_read %}
+            <span
+                style="display:inline-block; width:8px; height:8px; background:#C88468; border-radius:50%; margin-right:5px;"></span>
+            {% endif %}
+            <p style="display:inline; margin:0; font-family: 'Quicksand', sans-serif; color: #3E2F28; font-size:16px;">
+                {{ note.message }}
+            </p>
+            <br>
+            <small style="color: #8DA399; font-family: 'Caveat', cursive; font-size:16px;">{{ note.created_at|timesince
+                }} ago</small>
+        </div>
+        {% empty %}
+        <p style="font-family: 'Quicksand', sans-serif; color: #8DA399; font-style:italic; text-align:center;">No new
+            notifications right now!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

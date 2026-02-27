@@ -1,0 +1,218 @@
+/* =========================
+   My Cookbooks & Favorites Layout
+========================= */
+
+.cookbooks-page {
+    padding: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.cookbooks-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    color: #3E2F28;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* Grid Layout for Cookbooks */
+.cookbook-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    list-style: none;
+    /* Remove default ul dots */
+    padding: 0;
+    margin: 0;
+}
+
+.cookbook-card {
+    background: #FFFFFF;
+    border: 1px solid #E0DCD9;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
+    box-shadow: 0 4px 20px -2px rgba(62, 47, 40, 0.15);
+    transition: 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+    overflow: hidden;
+}
+
+.cookbook-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px -2px rgba(62, 47, 40, 0.2);
+}
+
+.cookbook-card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.cookbook-author {
+    font-weight: 600;
+    font-size: 14px;
+    color: #8DA399;
+    margin-bottom: 5px;
+}
+
+.cookbook-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+.cookbook-title a {
+    color: #3E2F28;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.cookbook-title a:hover {
+    color: #C88468;
+}
+
+.cookbook-image-wrapper {
+    display: block;
+    overflow: hidden;
+    border-bottom: 1px solid #E0DCD9;
+}
+
+.cookbook-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform 0.3s;
+    display: block;
+}
+
+.cookbook-image-placeholder {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: #f1ece5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-style: italic;
+    transition: transform 0.3s;
+}
+
+.cookbook-image-wrapper:hover .cookbook-image,
+.cookbook-image-wrapper:hover .cookbook-image-placeholder {
+    transform: scale(1.05);
+    /* Slight zoom on hover */
+}
+
+.cookbook-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: auto;
+}
+
+.cookbook-footer .servings {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.cookbook-footer .servings svg {
+    width: 16px;
+    height: 16px;
+    color: #C88468;
+    margin-right: 4px;
+}
+
+.cookbook-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-edit {
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'Quicksand', sans-serif;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-edit:hover {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-delete {
+    background: none;
+    border: 1px solid #C88468;
+    color: #C88468;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.btn-delete:hover {
+    background: #C88468;
+    color: white;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+    margin-top: 40px;
+}
+
+.empty-state p {
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: #8DA399;
+}
+
+.btn-empty-action {
+    display: inline-block;
+    margin-top: 15px;
+    text-decoration: none;
+    padding: 10px 20px;
+    color: #8d1c3d;
+    border: 1px solid #8d1c3d;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-empty-action:hover {
+    background: #8d1c3d;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cookbooks-page {
+        padding: 30px 20px;
+    }
+
+    .cookbooks-header {
+        font-size: 36px;
+    }
+}
