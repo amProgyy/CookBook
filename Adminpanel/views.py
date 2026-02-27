@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import JsonResponse
 from Recipe.models import Recipe, Tag
 
 def is_admin(user):
@@ -94,8 +95,10 @@ def delete_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == "POST":
         recipe.delete()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': 'Recipe deleted successfully.'})
         messages.success(request, f'Recipe deleted successfully.')
-    return redirect('admin_dashboard')
+    return redirect('manage_recipes')
 
 @user_passes_test(is_admin, login_url='/adminpanel/login/')
 def delete_user(request, user_id):
@@ -127,5 +130,7 @@ def delete_tag(request, tag_id):
     if request.method == "POST":
         tag_name = tag.name
         tag.delete()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': f'Tag "{tag_name}" deleted successfully.'})
         messages.success(request, f'Tag "{tag_name}" deleted successfully.')
     return redirect('manage_recipes')

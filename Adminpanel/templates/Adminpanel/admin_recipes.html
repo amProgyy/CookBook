@@ -32,7 +32,7 @@
             </thead>
             <tbody>
                 {% for recipe in all_recipes %}
-                <tr>
+                <tr id="recipe-row-{{ recipe.id }}">
                     <td><strong>{{ recipe.title }}</strong></td>
                     <td>@{{ recipe.author.username }}</td>
                     <td>{{ recipe.get_visibility_display }}</td>
@@ -47,8 +47,7 @@
                         <a href="{% url 'recipe_detail' recipe.id %}" target="_blank"
                             class="btn-admin btn-view">View</a>
                         <form method="POST" action="{% url 'admin_delete_recipe' recipe.id %}"
-                            onsubmit="return confirm('Are you sure you want to delete this recipe?');"
-                            style="display:inline;">
+                            class="delete-recipe-form" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn-admin btn-danger">Delete</button>
                         </form>
@@ -74,11 +73,12 @@
         {% if all_tags %}
         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
             {% for tag in all_tags %}
-            <div
+            <div id="tag-item-{{ tag.id }}"
                 style="background: #f1ece5; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid #E0DCD9;">
-                <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">{{ tag.name }}</span>
-                <form method="POST" action="{% url 'admin_delete_tag' tag.id %}"
-                    onsubmit="return confirm('Are you sure you want to delete this tag?');" style="margin: 0;">
+                <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">{{ tag.name
+                    }}</span>
+                <form method="POST" action="{% url 'admin_delete_tag' tag.id %}" class="delete-tag-form"
+                    style="margin: 0;">
                     {% csrf_token %}
                     <button type="submit"
                         style="background: none; border: none; color: #E63946; cursor: pointer; font-size: 16px; padding: 0;">&times;</button>
@@ -92,4 +92,68 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Handle recipe deletion without reload
+        const recipeForms = document.querySelectorAll('.delete-recipe-form');
+        recipeForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!confirm('Are you sure you want to delete this recipe?')) return;
+
+                const currentForm = e.target;
+                const row = currentForm.closest('tr');
+                const url = currentForm.action;
+                const formData = new FormData(currentForm);
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            row.remove();
+                        }
+                    })
+                    .catch(err => console.error("Error deleting recipe:", err));
+            });
+        });
+
+        // Handle tag deletion without reload
+        const tagForms = document.querySelectorAll('.delete-tag-form');
+        tagForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!confirm('Are you sure you want to delete this tag?')) return;
+
+                const currentForm = e.target;
+                const tagDiv = currentForm.closest('div[id^="tag-item-"]');
+                const url = currentForm.action;
+                const formData = new FormData(currentForm);
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            tagDiv.remove();
+                        }
+                    })
+                    .catch(err => console.error("Error deleting tag:", err));
+            });
+        });
+    });
+</script>
 {% endblock %}
