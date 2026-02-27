@@ -75,8 +75,7 @@
             {% for tag in all_tags %}
             <div id="tag-item-{{ tag.id }}"
                 style="background: #f1ece5; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid #E0DCD9;">
-                <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">{{ tag.name
-                    }}</span>
+                <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">{{ tag.name }}</span>
                 <form method="POST" action="{% url 'admin_delete_tag' tag.id %}" class="delete-tag-form"
                     style="margin: 0;">
                     {% csrf_token %}
