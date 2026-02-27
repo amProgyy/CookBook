@@ -1,0 +1,199 @@
+/* Admin Dashboard Specific Styles aligning with the SavoryWise theme */
+.admin-page {
+    padding: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    color: #3E2F28;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.admin-section {
+    background: #FFFFFF;
+    border: 1px solid #E0DCD9;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
+    box-shadow: 0 4px 20px -2px rgba(62, 47, 40, 0.15);
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+.admin-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: #3E2F28;
+    border-bottom: 2px dashed #E0DCD9;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+    margin-top: 0;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Quicksand', sans-serif;
+    text-align: left;
+}
+
+.admin-table th {
+    font-weight: 700;
+    color: #8DA399;
+    font-size: 16px;
+    border-bottom: 1px solid #E0DCD9;
+    padding: 12px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #f1ece5;
+    vertical-align: top;
+    color: #3E2F28;
+    font-size: 15px;
+}
+
+/* Buttons */
+.btn-admin {
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    font-family: 'Quicksand', sans-serif;
+    border: 1px solid transparent;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+    background: transparent;
+}
+
+.btn-approve {
+    color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-approve:hover {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-reject {
+    color: #E63946;
+    border-color: #E63946;
+}
+
+.btn-reject:hover {
+    background: #E63946;
+    color: white;
+}
+
+.btn-danger {
+    color: #E63946;
+    border-color: #E63946;
+}
+
+.btn-danger:hover {
+    background: #E63946;
+    color: white;
+}
+
+.btn-view {
+    color: #6c757d;
+    border-color: #6c757d;
+    text-decoration: none;
+}
+
+.btn-view:hover {
+    background: #6c757d;
+    color: white;
+}
+
+.reject-form {
+    display: none;
+    margin-top: 10px;
+    background: #fdfbf7;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px dashed #E0DCD9;
+}
+
+.reject-form textarea {
+    width: 100%;
+    font-family: 'Quicksand', sans-serif;
+    padding: 10px;
+    border: 1px solid #E0DCD9;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.reject-form textarea:focus {
+    border-color: #C88468;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.badge-pending {
+    background: #F4A261;
+}
+
+.badge-approved {
+    background: #4CAF50;
+}
+
+.badge-rejected {
+    background: #E63946;
+}
+
+/* Admin Search Alignments */
+.admin-search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    max-width: 400px;
+}
+
+.admin-search-form input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #E0DCD9;
+    border-radius: 6px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.admin-search-form input:focus {
+    border-color: #C88468;
+}
+
+.admin-search-form button {
+    background: #C88468;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.admin-search-form button:hover {
+    background: #B36D51;
+}
