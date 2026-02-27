@@ -3,312 +3,183 @@
 
 {% block content %}
 
-<style>
-  :root {
-    --detail-bg: #f6f3ee;
-    --detail-ink: #1f1b16;
-    --detail-muted: #6c5f52;
-    --detail-accent: #b24b35;
-    --detail-accent-2: #2f6f61;
-    --detail-card: #ffffff;
-    --detail-shadow: rgba(31, 27, 22, 0.08);
-    --detail-border: rgba(31, 27, 22, 0.12);
-  }
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Recipe/css/recipe_detail.css' %}">
+{% endblock %}
 
-  .recipe-detail {
-    color: var(--detail-ink);
-    background: radial-gradient(1200px 500px at 10% -10%, #fff7e8 0%, transparent 60%),
-      radial-gradient(900px 400px at 100% 0%, #f0faf8 0%, transparent 55%),
-      var(--detail-bg);
-    border-radius: 20px;
-    padding: 28px;
-    box-shadow: 0 12px 30px var(--detail-shadow);
-  }
+<div id="recipe-{{ recipe.id }}" class="recipe-page">
 
-  .recipe-hero {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    align-items: center;
-    margin-bottom: 22px;
-  }
 
-  .recipe-hero h1 {
-    font-size: clamp(2rem, 2.5vw, 2.8rem);
-    margin: 0 0 10px;
-    letter-spacing: -0.02em;
-  }
+  <div class="recipe-flex">
+    <!-- LEFT SIDE -->
+    <div class="recipe-left">
+      <h1 class="recipe-title-display">{{ recipe.title }}</h1>
 
-  .recipe-description {
-    font-size: 1.05rem;
-    color: var(--detail-muted);
-    margin: 0 0 18px;
-  }
+      <div style="font-family: 'Quicksand', sans-serif; font-size: 18px; color: #3E2F28; margin-bottom: 20px;">
+        By <a href="{% url 'user_profile' recipe.author.username %}"
+          style="color: #C88468; text-decoration: none; font-weight: bold;">@{{ recipe.author.username }}</a>
+      </div>
 
-  .recipe-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 0.92rem;
-    color: var(--detail-muted);
-  }
+      <div class="author-actions" style="margin-top: 15px; display: flex; gap: 15px;">
+        {% if request.user == recipe.author %}
+        <a href="{% url 'edit_recipe' recipe_id=recipe.id %}" class="edit-btn">Edit Recipe</a>
+        <button class="delete-btn" onclick="deleteRecipe('{{ recipe.id }}')">Delete</button>
+        {% endif %}
+        <button onclick="fetchNutrition('{{ recipe.id }}')" class="edit-btn" style="background-color: #8DA399;">Check
+          Nutrition</button>
+      </div>
 
-  .recipe-meta strong {
-    color: var(--detail-ink);
-  }
+      <br>
 
-  .recipe-image {
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
-    border-radius: 16px;
-    border: 1px solid var(--detail-border);
-    box-shadow: 0 10px 24px var(--detail-shadow);
-  }
-
-  .tags-section {
-    margin-top: 10px;
-  }
-
-  .tags-section h4 {
-    margin: 0 0 8px;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--detail-muted);
-  }
-
-  .tag-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 12px;
-    margin: 0 8px 8px 0;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    background: rgba(178, 75, 53, 0.12);
-    color: var(--detail-accent);
-    border: 1px solid rgba(178, 75, 53, 0.3);
-  }
-
-  .servings-card {
-    background: var(--detail-card);
-    border-radius: 14px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border: 1px solid var(--detail-border);
-    box-shadow: 0 8px 18px var(--detail-shadow);
-  }
-
-  .servings-card label {
-    font-weight: 600;
-  }
-
-  .servings-card input {
-    width: 90px;
-    padding: 6px 10px;
-    border-radius: 10px;
-    border: 1px solid var(--detail-border);
-    font-size: 0.95rem;
-  }
-
-  .section {
-    margin-top: 26px;
-    background: var(--detail-card);
-    border-radius: 16px;
-    padding: 18px 20px;
-    border: 1px solid var(--detail-border);
-    box-shadow: 0 10px 22px var(--detail-shadow);
-  }
-
-  .section h2 {
-    margin: 0 0 14px;
-    font-size: 1.35rem;
-  }
-
-  .ingredient {
-    padding: 10px 0;
-    border-bottom: 1px dashed rgba(31, 27, 22, 0.15);
-  }
-
-  .ingredient:last-child {
-    border-bottom: none;
-  }
-
-  .ingredient p {
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .ingredient-input {
-    width: 80px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    border: 1px solid var(--detail-border);
-  }
-
-  .steps-list li {
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-
-  .steps-list img {
-    display: block;
-    margin-top: 10px;
-    width: 100%;
-    max-width: 360px;
-    border-radius: 12px;
-    border: 1px solid var(--detail-border);
-  }
-
-  .detail-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-  }
-
-  .detail-actions button,
-  .detail-actions a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 999px;
-    font-size: 0.95rem;
-    border: 1px solid transparent;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .detail-actions button {
-    background: rgba(178, 75, 53, 0.12);
-    color: var(--detail-accent);
-    border-color: rgba(178, 75, 53, 0.3);
-  }
-
-  .detail-actions a {
-    background: rgba(47, 111, 97, 0.12);
-    color: var(--detail-accent-2);
-    border-color: rgba(47, 111, 97, 0.3);
-  }
-
-  @media (max-width: 900px) {
-    .recipe-hero {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
-
-<div id="recipe-{{ recipe.id }}" class="recipe-detail">
-  <div class="recipe-hero">
-    <div>
-{% if recipe.image %}
-    <img class="recipe-image" src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
-{% endif %}
-      <h1>{{ recipe.title }}</h1>
-
-      <p class="recipe-description">{{ recipe.description }}</p>
-
+      <!-- Tags -->
+      <label>Tags:</label>
       <div class="tags-section">
-        <h4>Tags</h4>
         {% for tag in recipe.tags.all %}
-          <span class="tag-chip">{{ tag.name }}</span>
+        <span class="tag-chip">#{{ tag.name }}</span>
         {% empty %}
-          <p>No tags added.</p>
+        <span class="no-tags">No tags added.</span>
         {% endfor %}
       </div>
+
+      <br>
+
+      <!-- Description -->
+      <label>Description:</label>
+      <p class="recipe-desc-text">{{ recipe.description }}</p>
+
+      <div class="new-section">
+        <!-- Visiblity Meta -->
+        <div class="card-small-card">
+          <label>Visibility:</label>
+          <span class="meta-text">{{ recipe.get_visibility_display }}</span>
+        </div>
+        <!-- Servings -->
+        <div class="servings display-servings">
+          <label for="personsInput">Servings:</label>
+          <input type="number" id="personsInput" class="serving-input" value="{{ recipe.number_of_servings }}"
+            data-base="{{ recipe.number_of_servings }}" min="1" step="1">
+          <span id="scaleInfo" class="meta-text" style="display:none;"></span>
+          <button type="button" id="resetScaleBtn" class="reset-scale-btn" style="display:none;"
+            title="Reset ingredients to original servings">
+            Reset
+          </button>
+
+        </div>
+      </div>
+
+      <br>
+
     </div>
 
-    <div class="servings-card">
-      <!-- SERVINGS -->
-      <label for="personsInput"><strong>Persons:</strong></label>
-      <input type="number"
-             id="personsInput"
-             value="{{ recipe.number_of_servings }}"
-             data-base="{{ recipe.number_of_servings }}"
-             min="1"
-             step="0.1">
-      <div class="recipe-meta">
-        <span>Created on: <strong>{{ recipe.created_at }}</strong></span>
+    <!-- RIGHT SIDE IMAGE -->
+    <div class="recipe-right">
+      {% if recipe.image %}
+      <img class="recipe-image" src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
+      {% else %}
+      <div class="upload-box no-cursor">
+        <div class="upload-content">
+          <p>No Image Available</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="detail-actions">
+        <p class="created-date">Created: {{ recipe.created_at|date:"M d, Y" }}</p>
       </div>
     </div>
+
   </div>
 
-
-
-<!-- INGREDIENTS -->
-<div class="section">
-  <h2>Ingredients</h2>
-
-  <ol id="ingredientsList">
-{% for ing in ingredients %}
-    <li class="ingredient"
-        data-base="{{ ing.quantity }}">
-
-        <p>{{ ing.name }}:
-        <input type="number"
-               class="ingredient-input"
-               value="{{ ing.quantity }}"
-               min="0"
-               step="0.01">
-        {{ ing.unit }}</p> 
-
-    </li>
-{% endfor %}
-  </ol>
-</div>
-
-
-
-<!-- STEPS -->
-<div class="section">
-  <h2>Steps</h2>
-  <ol class="steps-list">
-    {% for step in steps %}
-        <li>{{ step.instruction }}
-            {% if step.image %}
-                <img src="{{ step.image.url }}">
-            {% endif %}
-        </li>
-    {% empty %}
-        <li>No steps added.</li>
-    {% endfor %}
-  </ol>
-</div>
-
-  <div class="detail-actions">
-    <button onclick="deleteRecipe({{ recipe.id }})">Delete</button>
-    <a href="{% url 'edit_recipe' recipe_id=recipe.id %}">Edit</a>
+  <!-- Ingredients Section -->
+  <div class="section-card">
+    <h3>Ingredients:</h3>
+    <ol id="ingredientsList" class="ingredients-display-list">
+      {% for ing in ingredients %}
+      <li class="ingredient-display-item" data-base="{{ ing.quantity }}">
+        <span class="ingredient-text">{{ ing.name }} : </span>
+        <input type="number" class="ingredient-input" value="{{ ing.quantity|floatformat:1 }}" min="0" step="0.5">
+        <span class="ingredient-text">{{ ing.unit }} </span>
+        <button onclick="getSubstitute('{{ ing.name }}')"
+          style="margin-left:auto; cursor:pointer; background:transparent; border:1px solid #C88468; color:#C88468; border-radius:15px; padding:4px 10px; font-size:12px; font-family:'Quicksand', sans-serif;">Substitute</button>
+      </li>
+      {% endfor %}
+    </ol>
   </div>
+
+  <!-- Steps Section -->
+  <div class="section-card">
+    <h3>Steps:</h3>
+    <ol class="steps-display-list">
+      {% for step in steps %}
+      <li class="step-display-item">
+        <p class="step-desc-text">{{ step.instruction }}</p>
+        {% if step.image %}
+        <div class="step-image-box">
+          <img class="step-image-display" src="{{ step.image.url }}">
+        </div>
+        {% endif %}
+      </li>
+      {% empty %}
+      <p class="no-steps">No steps added.</p>
+      {% endfor %}
+    </ol>
+  </div>
+
 </div>
+
 <!-- JS -->
 <script src="{% static 'Recipe/js/detail.js' %}"></script>
 <script>
-function deleteRecipe(recipeId) {
+  function deleteRecipe(recipeId) {
     if (!confirm("Are you sure you want to delete this recipe?")) {
-        return;
+      return;
     }
 
     fetch(`/recipe/delete/${recipeId}/`, {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "X-Requested-With": "XMLHttpRequest"
-        }
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "X-Requested-With": "XMLHttpRequest"
+      }
     })
-    .then(response => response.json())
-    .then(data => {
+      .then(response => response.json())
+      .then(data => {
         if (data.status === "success") {
-             window.location.href = data.redirect_url;
+          window.location.href = data.redirect_url;
         } else {
-            alert("Delete failed");
+          alert("Delete failed");
         }
-    });
-}
+      });
+  }
+
+  function fetchNutrition(recipeId) {
+    alert("Fetching nutrition data from Spoonacular API...");
+    fetch(`/recipe/nutrition/${recipeId}/`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.calories) {
+          alert(`Nutrition Facts:\nCalories: ${data.calories.value}${data.calories.unit}\nCarbs: ${data.carbs.value}${data.carbs.unit}\nFat: ${data.fat.value}${data.fat.unit}\nProtein: ${data.protein.value}${data.protein.unit}\n\n${data.status || ''}`);
+        } else {
+          alert("Nutrition data not available or missing API Key.");
+        }
+      })
+      .catch(err => alert("Failed to connect to API."));
+  }
+
+  function getSubstitute(ingredientName) {
+    alert("Looking up substitutes for " + ingredientName + "...");
+    fetch(`/recipe/substitute/${encodeURIComponent(ingredientName)}/`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.substitutes && data.substitutes.length > 0) {
+          alert(`Substitutes for ${ingredientName}:\n` + data.substitutes.join('\n') + `\n\n${data.message || ''}`);
+        } else {
+          alert("No substitutes found or missing API Key.");
+        }
+      })
+      .catch(err => alert("Failed to connect to API."));
+  }
+
 </script>
 
 {% endblock %}

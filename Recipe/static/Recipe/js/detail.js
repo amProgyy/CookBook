@@ -1,68 +1,149 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     const personsInput = document.getElementById("personsInput");
-    const ingredients = document.querySelectorAll(".ingredient");
+    const resetScaleBtn = document.getElementById("resetScaleBtn");
+    const scaleInfo = document.getElementById("scaleInfo");
+    const ingredients = document.querySelectorAll(".ingredient-display-item");
+
+    if (!personsInput || ingredients.length === 0) return;
 
     const baseServings = parseFloat(personsInput.dataset.base);
+    const snapToHalf = (qty) => Math.round(Number(qty) * 2) / 2;
+    const formatIngredientQty = (qty) => {
+        const snapped = snapToHalf(qty);
+        return Number.isInteger(snapped) ? String(snapped) : snapped.toFixed(1);
+    };
+    const normalizeServings = (value) => {
+        const servings = Math.round(parseFloat(value));
+        return Number.isFinite(servings) && servings > 0 ? servings : null;
+    };
 
     let isUpdating = false;
 
-    // 🔹 SERVINGS → INGREDIENTS
+    const formatScaleFactor = (scale) => {
+        const fixed = Number(scale).toFixed(2);
+        return fixed.replace(/\.00$/, "").replace(/(\.\d)0$/, "$1");
+    };
+
+    const baseServingsInt = normalizeServings(baseServings) || 1;
+    const updateScaleUI = () => {
+        if (!resetScaleBtn) return;
+
+        const currentServings = normalizeServings(personsInput.value) || baseServingsInt;
+        const scaled = currentServings !== baseServingsInt;
+
+        resetScaleBtn.style.display = scaled ? "" : "none";
+
+        if (scaleInfo) {
+            if (!scaled) {
+                scaleInfo.textContent = "";
+                scaleInfo.style.display = "none";
+            } else {
+                const factor = currentServings / baseServingsInt;
+                scaleInfo.textContent = `Scaled x${formatScaleFactor(factor)} (${baseServingsInt}→${currentServings})`;
+                scaleInfo.style.display = "inline";
+            }
+        }
+    };
+
+    const resetScale = () => {
+        if (isUpdating) return;
+        isUpdating = true;
+
+        personsInput.value = baseServingsInt;
+
+        ingredients.forEach(item => {
+            const input = item.querySelector(".ingredient-input");
+            const baseQty = parseFloat(item.dataset.base);
+            if (input && !isNaN(baseQty)) {
+                input.value = formatIngredientQty(baseQty);
+            }
+        });
+
+        isUpdating = false;
+        updateScaleUI();
+    };
+
+    personsInput.value = normalizeServings(personsInput.value) || 1;
+    ingredients.forEach(item => {
+        const input = item.querySelector(".ingredient-input");
+        const baseQty = parseFloat(item.dataset.base);
+        if (input && !isNaN(baseQty)) {
+            input.value = formatIngredientQty(baseQty);
+        }
+    });
+
+    if (resetScaleBtn) {
+        resetScaleBtn.addEventListener("click", resetScale);
+    }
+    updateScaleUI();
+
+    // Servings -> Ingredients
     personsInput.addEventListener("input", function () {
         if (isUpdating) return;
         isUpdating = true;
 
-        const newServings = parseFloat(this.value);
-        if (!newServings || newServings <= 0) {
+        const newServings = normalizeServings(this.value);
+        if (newServings === null) {
             isUpdating = false;
             return;
         }
+        this.value = newServings;
 
         const scale = newServings / baseServings;
 
         ingredients.forEach(item => {
             const baseQty = parseFloat(item.dataset.base);
-            const input = item.querySelector(".ingredient-input");
+            if (isNaN(baseQty)) return;
 
-            const newQty = (baseQty * scale).toFixed(2);
-            input.value = newQty;
+            const input = item.querySelector(".ingredient-input");
+            if (input) {
+                input.value = formatIngredientQty(baseQty * scale);
+            }
         });
 
         isUpdating = false;
+        updateScaleUI();
     });
 
-    // 🔹 INGREDIENT → SERVINGS
+    // Ingredient -> Servings
     ingredients.forEach(item => {
         const input = item.querySelector(".ingredient-input");
+        if (!input) return;
+
         const baseQty = parseFloat(item.dataset.base);
 
         input.addEventListener("input", function () {
             if (isUpdating) return;
             isUpdating = true;
 
-            const newQty = parseFloat(this.value);
-            if (!newQty || newQty <= 0 || baseQty === 0) {
+            const newQty = snapToHalf(this.value);
+            if (isNaN(newQty) || newQty <= 0 || isNaN(baseQty) || baseQty === 0) {
                 isUpdating = false;
                 return;
             }
 
             const scale = newQty / baseQty;
-            const newServings = (baseServings * scale).toFixed(2);
-
+            let newServings = Math.round(baseServings * scale);
+            if (newServings <= 0) newServings = 1;
             personsInput.value = newServings;
 
-            // Update all other ingredients
+            const normalizedScale = newServings / baseServings;
+            this.value = formatIngredientQty(baseQty * normalizedScale);
+
             ingredients.forEach(other => {
                 if (other === item) return;
 
                 const otherBase = parseFloat(other.dataset.base);
-                const otherInput = other.querySelector(".ingredient-input");
+                if (isNaN(otherBase)) return;
 
-                otherInput.value = (otherBase * scale).toFixed(2);
+                const otherInput = other.querySelector(".ingredient-input");
+                if (otherInput) {
+                    otherInput.value = formatIngredientQty(otherBase * normalizedScale);
+                }
             });
 
             isUpdating = false;
+            updateScaleUI();
         });
     });
-
 });

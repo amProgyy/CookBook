@@ -2,8 +2,61 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Recipe, Ingredient, Tag, Step
+from User.models import Favorite
 from .forms import RecipeForm, IngredientFormSet, StepFormSet
 from decimal import Decimal, ROUND_HALF_UP
+from django.db.models import Count
+
+def home_feed(request):
+    recipes = Recipe.objects.filter(visibility=Recipe.PUBLIC, status='approved').order_by('-created_at')
+    
+    trending_recipes = Recipe.objects.filter(visibility=Recipe.PUBLIC, status='approved').annotate(
+        num_favorites=Count('favorited_by')
+    ).order_by('-num_favorites', '-created_at')[:5]
+
+    # Advanced Search parameters
+    query = request.GET.get('q', '').strip()
+    tag_list = request.GET.getlist('tag')
+    ingredient_list = request.GET.getlist('ingredient')
+
+    if query:
+        recipes = recipes.filter(title__icontains=query)
+    
+    tags = []
+    for item in tag_list:
+        tags.extend([t.strip() for t in item.split(',') if t.strip()])
+    for tag in tags:
+        recipes = recipes.filter(tags__name__icontains=tag)
+        
+    ingredients = []
+    for item in ingredient_list:
+        ingredients.extend([i.strip() for i in item.split(',') if i.strip()])
+    for ingredient in ingredients:
+        recipes = recipes.filter(ingredients__name__icontains=ingredient)
+
+    # Avoid duplicate rows from joining ManyToMany filters
+    recipes = recipes.distinct()
+
+    # Pre-calculate user favorites to avoid N+1 queries in the template
+    user_favorited_ids = []
+    if request.user.is_authenticated:
+        user_favorited_ids = Favorite.objects.filter(user=request.user).values_list('recipe_id', flat=True)
+
+    # All tags for JS autocomplete
+    all_tags = list(Tag.objects.values_list('name', flat=True).distinct())
+
+    context = {
+        'recipes': recipes,
+        'trending_recipes': trending_recipes,
+        'user_favorited_ids': list(user_favorited_ids),
+        'q': query,
+        'tag_search': ', '.join(tags),
+        'ingredient_search': ', '.join(ingredients),
+        'all_tags': all_tags,
+    }
+    for recipe in recipes:
+        print(recipe)
+    return render(request, 'home_feed.html', context)
 
 
 @login_required
@@ -16,6 +69,13 @@ def create_recipe(request):
             # Save recipe 
             recipe = recipe_form.save(commit=False)
             recipe.author = request.user
+            
+            # Only public recipes need admin approval. Private ones are automatically approved.
+            if recipe.visibility == Recipe.PRIVATE:
+                recipe.status = 'approved'
+            else:
+                recipe.status = 'pending'
+                
             recipe.save()
 
             # Handle tags
@@ -122,6 +182,8 @@ def delete_ajax(request, recipe_id):
 @login_required
 def edit_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id, author=request.user)
+    old_visibility = recipe.visibility
+    
     if request.method == "POST":
         recipe_form = RecipeForm(request.POST, request.FILES, instance=recipe)
 
@@ -139,7 +201,18 @@ def edit_recipe(request, recipe_id):
         )
 
         if recipe_form.is_valid() and ingredient_formset.is_valid() and step_formset.is_valid():
-            recipe_form.save()
+            edited_recipe = recipe_form.save(commit=False)
+            
+            # Workflow logic for approvals based on visibility
+            if edited_recipe.visibility == Recipe.PRIVATE:
+                edited_recipe.status = 'approved' # Private recipes don't need approval
+            elif old_visibility == Recipe.PRIVATE and edited_recipe.visibility == Recipe.PUBLIC:
+                edited_recipe.status = 'pending' # Switched to public, needs admin review
+            elif edited_recipe.status == 'rejected' and edited_recipe.visibility == Recipe.PUBLIC:
+                edited_recipe.status = 'pending' # Re-submitting a rejected recipe for review
+                
+            edited_recipe.save()
+            
             tags_input = request.POST.getlist('tags')
             tag_objects = []
 
@@ -162,6 +235,10 @@ def edit_recipe(request, recipe_id):
             ingredient_formset.save()
             step_formset.save()
             return redirect('recipe_detail', recipe_id=recipe.id)
+        else:
+            print("Recipe Form Errors:", recipe_form.errors)
+            print("Ingredient Formset Errors:", ingredient_formset.errors)
+            print("Step Formset Errors:", step_formset.errors)
     else:
         recipe_form = RecipeForm(instance=recipe)
         ingredient_formset = IngredientFormSet(instance=recipe, prefix='ingredients')
@@ -180,11 +257,51 @@ def edit_recipe(request, recipe_id):
 
 })
 
+@login_required
+def nutrition_analysis(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    import requests
+    
+    SPOONACULAR_API_KEY = "REPLACE_WITH_YOUR_KEY"
+    url = f"https://api.spoonacular.com/recipes/guessNutrition?title={recipe.title}&apiKey={SPOONACULAR_API_KEY}"
+    
+    # Mock data fallback
+    nutrition_data = {
+        "calories": {"value": 450, "unit": "kcal"},
+        "fat": {"value": 15, "unit": "g"},
+        "protein": {"value": 20, "unit": "g"},
+        "carbs": {"value": 50, "unit": "g"},
+        "status": "Using Mock Data - Add API Key in views.py"
+    }
+    
+    try:
+        if SPOONACULAR_API_KEY != "REPLACE_WITH_YOUR_KEY":
+            response = requests.get(url)
+            if response.status_code == 200:
+                nutrition_data = response.json()
+    except:
+        pass
 
+    return JsonResponse(nutrition_data)
 
-
-
-
-
-
-
+@login_required
+def ingredient_substitute(request, ingredient_name):
+    import requests
+    SPOONACULAR_API_KEY = "REPLACE_WITH_YOUR_KEY"
+    url = f"https://api.spoonacular.com/food/ingredients/substitutes?ingredientName={ingredient_name}&apiKey={SPOONACULAR_API_KEY}"
+    
+    substitutes = {
+        "status": "success", 
+        "substitutes": [f"Option 1 for {ingredient_name}", f"Option 2 for {ingredient_name}"], 
+        "message": "Using mock data - Add Spoonacular API key"
+    }
+    
+    try:
+        if SPOONACULAR_API_KEY != "REPLACE_WITH_YOUR_KEY":
+            response = requests.get(url)
+            if response.status_code == 200:
+                substitutes = response.json()
+    except:
+        pass
+        
+    return JsonResponse(substitutes)

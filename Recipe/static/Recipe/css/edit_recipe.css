@@ -2,10 +2,11 @@
    Background
 ========================= */
 body {
-    background-color: #FFFDF2;
-    background-image: radial-gradient(#e7ded3 1px, transparent 1px);
-    background-size: 22px 22px;
-    font-family: 'Inter', sans-serif;
+    background-color: #F4F1EA;
+    background-image: radial-gradient(rgba(62, 47, 40, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    font-family: 'Quicksand', sans-serif;
+    color: #3E2F28;
     margin: 0;
 }
 
@@ -54,13 +55,15 @@ body {
 ========================= */
 .recipe-title input {
     text-transform: capitalize;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 56px;
+    font-family: 'Caveat', cursive;
+    /* Handwritten look */
+    font-size: 72px;
     border: none;
     outline: none;
     background: transparent;
-    color: black;
-    border-bottom: 1px solid #ddd;
+    color: #3E2F28;
+    border-bottom: 2px solid #3E2F28;
+    /* Solid ink line */
     width: 80%;
 }
 
@@ -75,16 +78,22 @@ body {
 ========================= */
 .section-card {
     background: white;
-    border-radius: 18px;
+    /* Scrapbook organic shape */
+    border-radius: 6px 20px 8px 15px / 15px 5px 22px 5px;
+    border: 1px solid #E0DCD9;
     padding: 30px 20px;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    /* Hard offset shadow */
+    box-shadow: 4px 5px 0px rgba(62, 47, 40, 0.15);
     margin-bottom: 35px;
     transition: 0.3s ease;
+    align-items: center;
+    transform: rotate(-0.5deg);
+    /* Slight paper angle */
 }
 
 .section-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transform: translateY(-2px) rotate(-0.5deg);
+    box-shadow: 6px 7px 0px rgba(62, 47, 40, 0.2);
 }
 
 
@@ -104,17 +113,22 @@ body {
 .step-form input {
     border: none;
     outline: none;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px dashed #C88468;
     background: transparent;
     padding: 6px;
-    font-size: 20px;
+    font-family: 'Caveat', cursive;
+    /* Handwritten entries */
+    color: #3E2F28;
+    font-size: 24px;
     font-style: normal;
     padding-bottom: 10px;
 }
 
 
-.step-instruction{
+.step-instruction {
     font-style: normal;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .step-form textarea {
@@ -123,17 +137,16 @@ body {
     outline: none;
     width: 60%;
     min-height: 80px;
-    font-size: 20px;
+    font-size: 24px;
+    font-family: 'Caveat', cursive;
+    color: #3E2F28;
     line-height: 28px;
     resize: none;
-    font-style: none;
-
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 27px,
-        #e4e4e4 28px
-    );
+    font-style: normal;
+    background-image: repeating-linear-gradient(to bottom,
+            transparent,
+            transparent 27px,
+            #E0DCD9 28px);
     background-size: 100% 28px;
     background-attachment: local;
 }
@@ -143,17 +156,25 @@ body {
    Buttons
 ========================= */
 .add-btn {
-    background: #f1ece5;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 10px;
+    background: transparent;
+    color: #8DA399;
+    border: 2px dashed #E4DFD8;
+    padding: 12px 24px;
+    border-radius: 4px;
     cursor: pointer;
-    font-weight: 500;
-    transition: 0.2s ease;
+    font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    text-transform: uppercase;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+    width: 100%;
 }
 
 .add-btn:hover {
-    background: #e8e1d8;
+    background: #F8F5F1;
+    color: #C88468;
+    border-color: #C88468;
 }
 
 
@@ -162,69 +183,141 @@ body {
 ========================= */
 .save-btn {
     position: fixed;
-    top: 20px;
-    right: 50px;
-    background: #8d1c3d;
-    color: white;
+    top: 25px;
+    right: 40px;
+    background: #9F1239;
+    /* SavoryWise Maroon */
+    color: #FFFFFF;
     border: none;
-    padding: 14px 26px;
-    border-radius: 12px;
-    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 4px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-    transition: 0.2s ease;
+    box-shadow: 0px 4px 10px rgba(159, 18, 57, 0.2);
+    transition: transform 0.2s, background 0.2s;
+    z-index: 1001;
 }
 
 .save-btn:hover {
-    background: #741531;
+    background: #7D0E2D;
+    transform: translateY(-2px);
+}
+
+.save-btn:hover {
+    background: #B36D51;
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0px #3E2F28;
 }
 
 
 /* =========================
-   Upload (Main Recipe Image)
+   Upload (Main Recipe Image Polaroid)
 ========================= */
+.recipe-right {
+    position: sticky;
+    top: 100px;
+}
+
 .upload-container {
-    width: 300px;
+    width: 340px;
 }
 
 .upload-box {
     position: relative;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 220px;
-    border: 2px dashed #d3d3d3;
-    border-radius: 18px;
+    width: 320px;
+    height: 340px;
+    /* Polaroid style */
+    border: 10px solid white;
+    border-bottom: 60px solid white;
+    background: #D9D2C8;
+    box-shadow: 0 10px 20px rgba(62, 47, 40, 0.1);
     cursor: pointer;
-    background: #fafafa;
-    transition: 0.3s ease;
-    overflow: hidden;
+    transition: transform 0.3s;
 }
 
 .upload-box:hover {
-    border-color: #6d253b;
-    background: #fdf3f6;
+    transform: scale(1.02);
+}
+
+.upload-box::after {
+    /* Custom Paperclip purely using CSS */
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 40px;
+    border: 2px solid #8DA399;
+    border-radius: 10px;
+    z-index: 10;
 }
 
 .upload-content {
     text-align: center;
-    color: #999;
+    color: #C88468;
+    z-index: 6;
 }
 
 .plus-icon {
-    font-size: 50px;
+    font-size: 40px;
     font-weight: 300;
     line-height: 1;
+    margin-bottom: 5px;
+}
+
+.upload-box p {
+    font-family: 'Quicksand', sans-serif;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Appended text via JS to mimic the polaroid placeholder text */
+.upload-box .polaroid-text {
+    position: absolute;
+    bottom: -45px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: #3E2F28;
 }
 
 .preview-img {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    z-index: 5;
+    background-color: white;
+    /* Hide #D9D2C8 during load */
 }
 
+.upload-box.has-image .upload-content,
+.upload-box.has-image .polaroid-text {
+    display: none;
+}
+
+.upload-box.has-image .preview-img {
+    display: block;
+}
+
+/* Ensure JS inputs don't show up */
+#id_image,
+.step-upload-label input[type="file"],
 .image-input {
     display: none;
 }
@@ -239,8 +332,8 @@ body {
 
 .step-upload-label {
     display: block;
-    border: 2px dashed #ccc;
-    border-radius: 12px;
+    border: 2px dashed #E0DCD9;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
     padding: 15px;
     text-align: center;
     cursor: pointer;
@@ -250,8 +343,8 @@ body {
 }
 
 .step-upload-label:hover {
-    border-color: #6d253b;
-    background: #fdf3f6;
+    border-color: #C88468;
+    background: #F4F1EA;
 }
 
 .step-upload-label input[type="file"] {
@@ -273,39 +366,41 @@ body {
 
 
 /* =========================
-   Chef Notes & Description
+   Chef Notes & Description Sub-headers
 ========================= */
-.chef-notes,
-.recipe-description,
-label,
-.section-card span,
+.chef-notes label,
+.recipe-description label {
+    font-family: 'Caveat', cursive;
+    color: #C88468;
+    font-size: 32px;
+    display: block;
+    margin-bottom: 5px;
+}
+
 h3 {
-    font-family: 'Georgia', serif;
-    font-size: 20px;
-    font-style: italic;
-    color: #6d253b;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #3E2F28;
+    margin-top: 0;
+    margin-bottom: 20px;
 }
 
 .chef-notes textarea,
 .recipe-description textarea {
-    font-style: normal;
-    color: black;
-    width: 80%;
-    min-height: 80px;
-    font-size: 17px;
-    line-height: 28px;
-    resize: none;
-    outline: none;
+    width: 100%;
+    min-height: 100px;
+    background: transparent;
     border: none;
-    background-color: #FFFDF2;
-
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 27px,
-        #e4e4e4 28px
-    );
-    background-size: 100% 28px;
+    outline: none;
+    resize: none;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 18px;
+    line-height: 32px;
+    color: #8DA399;
+    /* Clean horizontal ruled lines instead of blue lines */
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, rgba(200, 170, 150, 0.8) 32px);
+    background-size: 100% 32px;
     background-attachment: local;
 }
 
@@ -314,10 +409,9 @@ h3 {
    Servings
 ========================= */
 .servings {
-    font-family: 'Georgia', serif;
+    font-family: 'Playfair Display', serif;
     font-size: 20px;
-    font-style: italic;
-    color: #6d253b;
+    color: #3E2F28;
     text-align: center;
 }
 
@@ -339,8 +433,8 @@ h3 {
 .remove-ingredient {
     background: none;
     border: none;
-    color: #b00020;
-    font-size: 20px;
+    color: #C88468;
+    font-size: 24px;
     cursor: pointer;
     transition: 0.2s ease;
 }
@@ -412,7 +506,7 @@ h3 {
     width: 50%;
     border: none;
     background: transparent;
-    
+
 }
 
 
@@ -426,8 +520,8 @@ tag-select:focus {
    Visibility
 ========================= */
 
-.card-small-card select{
-        border: none;
+.card-small-card select {
+    border: none;
     outline: none;
     border-bottom: 1px solid #ddd;
     background: transparent;
@@ -435,6 +529,7 @@ tag-select:focus {
     font-size: 15px;
 
 }
+
 /* =========================
    New section
 ========================= */

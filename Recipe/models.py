@@ -21,7 +21,7 @@ class Recipe(models.Model):
     chefs_note = models.TextField(blank=True)
     number_of_servings = models.PositiveIntegerField()
     tags = models.ManyToManyField(Tag, blank=True, related_name='recipes')
-    image = models.ImageField(upload_to='recipes/', blank=True, null=True)
+    image = models.ImageField(upload_to='recipes/', blank=True, null=True, max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -39,6 +39,17 @@ class Recipe(models.Model):
         default=PUBLIC
     )
 
+    STATUS_CHOICES = [
+        ('pending', 'Pending Approval'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    rejection_reason = models.TextField(blank=True)
 
 
 class Ingredient(models.Model):

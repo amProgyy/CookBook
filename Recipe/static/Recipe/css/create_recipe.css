@@ -2,17 +2,29 @@
    Background
 ========================= */
 body {
-    background-color: #FFFDF2;
-    background-image: radial-gradient(#e7ded3 1px, transparent 1px);
-    background-size: 22px 22px;
-    font-family: 'Inter', sans-serif;
+    background-color: #F4F1EA;
+    background-image: radial-gradient(rgba(62, 47, 40, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    font-family: 'Quicksand', sans-serif;
+    color: #3E2F28;
     margin: 0;
 }
+
 
 /* =========================
    Header
 ========================= */
-
+.head {
+    position: fixed;
+    height: 90px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    top: 0;
+    z-index: 1000;
+    background: #FFFDF2;
+    border-bottom: 1px solid #f5f0f0;
+}
 
 
 /* =========================
@@ -28,10 +40,6 @@ body {
     padding: 20px;
 }
 
-
-/* =========================
-   Left & Right Sections
-========================= */
 .recipe-left {
     flex: 2;
 }
@@ -39,50 +47,53 @@ body {
 .recipe-right {
     flex: 1;
     padding-left: 20px;
-   
 }
 
 
 /* =========================
    Title
 ========================= */
-
 .recipe-title input {
     text-transform: capitalize;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 56px;
+    font-family: 'Caveat', cursive;
+    /* Handwritten look */
+    font-size: 72px;
     border: none;
     outline: none;
     background: transparent;
-    color: black;
-    border-bottom: 1px solid #ddd;
+    color: #3E2F28;
+    border-bottom: 2px solid #3E2F28;
+    /* Solid ink line */
     width: 80%;
 }
 
-.recipe-title::placeholder {
+.recipe-title input::placeholder {
     text-transform: none;
     color: #999;
 }
 
 
-
 /* =========================
-   Section Card Style
+   Section Card
 ========================= */
 .section-card {
     background: white;
-    border-radius: 18px;
+    /* Scrapbook organic shape */
+    border-radius: 6px 20px 8px 15px / 15px 5px 22px 5px;
+    border: 1px solid #E0DCD9;
     padding: 30px 20px;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    /* Hard offset shadow */
+    box-shadow: 4px 5px 0px rgba(62, 47, 40, 0.15);
     margin-bottom: 35px;
     transition: 0.3s ease;
     align-items: center;
-    
+    transform: rotate(-0.5deg);
+    /* Slight paper angle */
 }
 
 .section-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transform: translateY(-2px) rotate(-0.5deg);
+    box-shadow: 6px 7px 0px rgba(62, 47, 40, 0.2);
 }
 
 
@@ -95,7 +106,6 @@ body {
     align-items: center;
     gap: 12px;
     margin-bottom: 12px;
-    
 }
 
 .ingredient-form input,
@@ -103,42 +113,42 @@ body {
 .step-form input {
     border: none;
     outline: none;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px dashed #C88468;
     background: transparent;
     padding: 6px;
-    font-size: 20px;
-    font-style: none;
+    font-family: 'Caveat', cursive;
+    /* Handwritten entries */
+    color: #3E2F28;
+    font-size: 24px;
+    font-style: normal;
     padding-bottom: 10px;
-    align-items: center;
-    
-    
+}
+
+
+.step-instruction {
+    font-style: normal;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .step-form textarea {
-    padding-bottom: 20px;
     background: transparent;
-    padding: 6px;
-    padding-right: 20px;
     border: none;
     outline: none;
     width: 60%;
     min-height: 80px;
-    font-size: 20px;
-    line-height: 28px;   /* IMPORTANT */
-    resize: none;       /* prevent manual resize */
-    outline: none;
-    background-color: transparent;
-    /* Blue lines */
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 27px,
-        #e4e4e4 28px
-    
-    );
+    font-size: 24px;
+    font-family: 'Caveat', cursive;
+    color: #3E2F28;
+    line-height: 28px;
+    resize: none;
+    font-style: normal;
+    background-image: repeating-linear-gradient(to bottom,
+            transparent,
+            transparent 27px,
+            #E0DCD9 28px);
     background-size: 100% 28px;
-
-    background-attachment: local; 
+    background-attachment: local;
 }
 
 
@@ -146,17 +156,25 @@ body {
    Buttons
 ========================= */
 .add-btn {
-    background: #f1ece5;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 10px;
+    background: transparent;
+    color: #8DA399;
+    border: 2px dashed #E4DFD8;
+    padding: 12px 24px;
+    border-radius: 4px;
     cursor: pointer;
-    font-weight: 500;
-    transition: 0.2s ease;
+    font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    text-transform: uppercase;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+    width: 100%;
 }
 
 .add-btn:hover {
-    background: #e8e1d8;
+    background: #F8F5F1;
+    color: #C88468;
+    border-color: #C88468;
 }
 
 
@@ -165,42 +183,386 @@ body {
 ========================= */
 .save-btn {
     position: fixed;
-    top: 20px;
-    right: 50px;
-    background: #8d1c3d;
-    color: white;
+    top: 25px;
+    right: 40px;
+    background: #9F1239;
+    /* SavoryWise Maroon */
+    color: #FFFFFF;
     border: none;
-    padding: 14px 26px;
-    border-radius: 12px;
-    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 4px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-    transition: 0.2s ease;
+    box-shadow: 0px 4px 10px rgba(159, 18, 57, 0.2);
+    transition: transform 0.2s, background 0.2s;
+    z-index: 1001;
 }
 
 .save-btn:hover {
-    background: #741531;
+    background: #7D0E2D;
+    transform: translateY(-2px);
+}
+
+.save-btn:hover {
+    background: #B36D51;
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0px #3E2F28;
 }
 
 
 /* =========================
-   Header
+   Upload (Main Recipe Image Polaroid)
 ========================= */
-.head {
-    position: fixed;
-    height:90px;
-    width:100%;
+.recipe-right {
+    position: sticky;
+    top: 100px;
+}
+
+.upload-container {
+    width: 340px;
+}
+
+.upload-box {
+    position: relative;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 320px;
+    height: 340px;
+    /* Polaroid style */
+    border: 10px solid white;
+    border-bottom: 60px solid white;
+    background: #D9D2C8;
+    box-shadow: 0 10px 20px rgba(62, 47, 40, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.upload-box:hover {
+    transform: scale(1.02);
+}
+
+.upload-box::after {
+    /* Custom Paperclip purely using CSS */
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 40px;
+    border: 2px solid #8DA399;
+    border-radius: 10px;
+    z-index: 10;
+}
+
+.upload-content {
+    text-align: center;
+    color: #C88468;
+    z-index: 6;
+}
+
+.plus-icon {
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.upload-box p {
+    font-family: 'Quicksand', sans-serif;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Appended text via JS to mimic the polaroid placeholder text */
+.upload-box .polaroid-text {
+    position: absolute;
+    bottom: -45px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: #3E2F28;
+}
+
+.preview-img {
+    position: absolute;
     top: 0;
-    z-index: 1000;
-    background: #FFFDF2;
-    border-bottom: 1px solid #f5f0f0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 5;
+    background-color: white;
+    /* Hide #D9D2C8 during load */
+}
+
+.upload-box.has-image .upload-content,
+.upload-box.has-image .polaroid-text {
+    display: none;
+}
+
+.upload-box.has-image .preview-img {
+    display: block;
+}
+
+/* Ensure JS inputs don't show up */
+#id_image,
+.step-upload-label input[type="file"],
+.image-input {
+    display: none;
+}
+
+
+/* =========================
+   Step Image Upload
+========================= */
+.step-image-box {
+    margin-top: 10px;
+}
+
+.step-upload-label {
+    display: block;
+    border: 2px dashed #E0DCD9;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    background: #fafafa;
+    position: relative;
+    transition: 0.3s;
+}
+
+.step-upload-label:hover {
+    border-color: #C88468;
+    background: #F4F1EA;
+}
+
+.step-upload-label input[type="file"] {
+    display: none;
+}
+
+.upload-placeholder {
+    color: #888;
+    font-size: 14px;
+}
+
+.step-preview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 10px;
+    display: none;
+}
+.step-upload-label.has-image .step-preview {
+    display: block;
+}
+
+
+/* =========================
+   Chef Notes & Description Sub-headers
+========================= */
+.chef-notes label,
+.recipe-description label {
+    font-family: 'Caveat', cursive;
+    color: #C88468;
+    font-size: 32px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #3E2F28;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.chef-notes textarea,
+.recipe-description textarea {
+    width: 100%;
+    min-height: 100px;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 18px;
+    line-height: 32px;
+    color: #8DA399;
+    /* Clean horizontal ruled lines instead of blue lines */
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, rgba(200, 170, 150, 0.8) 32px);
+    background-size: 100% 32px;
+    background-attachment: local;
+}
+
+
+/* =========================
+   Servings
+========================= */
+.servings {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: #3E2F28;
+    text-align: center;
+}
+
+.servings input {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    text-align: center;
+    max-width: 70px;
+    min-width: 20px;
+}
+
+
+/* =========================
+   Remove Buttons
+========================= */
+.remove-step,
+.remove-ingredient {
+    background: none;
+    border: none;
+    color: #C88468;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.remove-step:hover,
+.remove-ingredient:hover {
+    color: red;
+}
+
+.form-warning {
+    display: none;
+    margin: 0 0 12px;
+    color: #B42318;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.form-warning.show {
+    display: block;
+}
+
+.ingredient-row-warning {
+    display: none;
+    margin: 0 0 10px 30px;
+    color: #B42318;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ingredient-row-warning.show {
+    display: block;
+}
+
+.input-error {
+    border-bottom: 2px solid #B42318 !important;
+}
+
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 900px) {
+
+    .recipe-page {
+        padding: 20px 5%;
+        gap: 20px;
+    }
+
+    .recipe-flex {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .recipe-right {
+        padding-left: 0;
+    }
+
+    .recipe-title input {
+        width: 100%;
+        font-size: clamp(24px, 5vw, 56px);
+    }
+
+    .ingredient-form,
+    .step-form {
+        flex-wrap: wrap;
+    }
+
+    .ingredient-form input,
+    .ingredient-form select,
+    .step-form input,
+    .step-form textarea {
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .step-upload-label,
+    .upload-box {
+        width: 100%;
+    }
+
+    .step-preview,
+    .preview-img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .save-btn {
+        right: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}
+
+/* Tag Chip */
+.tag-select {
+    display: inline-block;
+    width: 50%;
+    border: none;
+    background: transparent;
 
 }
 
 
+
+tag-select:focus {
+    outline: none;
+    border: none;
+}
+
+/* =========================
+   Visibility
+========================= */
+
+.card-small-card select {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    padding: 6px;
+    font-size: 15px;
+
+}
 
 /* =========================
    New section
@@ -216,320 +578,3 @@ body {
 servings {
     flex: 1;
 }
-/* =========================
-   Photo Upload Box
-========================= */
-#id_image {
-    display: none;
-}
-
-input[type="file"] {
-    display: none;
-}
-
-.upload-container {
-    width: 300px;
-}
-
-.upload-box {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 220px;
-    border: 2px dashed #d3d3d3;
-    border-radius: 18px;
-    cursor: pointer;
-    background: #fafafa;
-    transition: 0.3s ease;
-    overflow: hidden;
-}
-
-.upload-box:hover {
-    border-color: #6d253b;
-    background: #fdf3f6;
-}
-
-.upload-content {
-    text-align: center;
-    color: #999;
-}
-
-.plus-icon {
-    font-size: 50px;
-    font-weight: 300;
-    line-height: 1;
-}
-
-.upload-content p {
-    margin-top: 8px;
-    font-size: 14px;
-}
-
-.preview-img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
-
-
-/* 
-Step image */
-#id_image {
-    display: none;
-}
-.step-image-box {
-    margin-top: 10px;
-}
-
-.step-upload-label {
-    display: block;
-    border: 2px dashed #ccc;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    cursor: pointer;
-    background: #fafafa;
-    position: relative;
-    transition: 0.3s;
-}
-
-.step-upload-label:hover {
-    border-color: #6d253b;
-    background: #fdf3f6;
-}
-
-.step-upload-label input[type="file"] {
-    display: none;
-}
-
-.upload-placeholder {
-    color: #888;
-    font-size: 14px;
-}
-
-.step-preview {
-    width: 100px;        /* reduce width */
-    height: 100px;       /* fixed height */
-    object-fit: cover;
-    border-radius: 10px;
-    display:none;
-    margin-top: 10px;
-}
-
-
-/* =========================
- Chef Notes and Description  
-========================= */
-.chef-notes,
-.recipe-description,
-label,
-.section-card span,
-h3  {
-    border: none;
-    font-family: 'Georgia', serif;
-    font-size: 20px;
-    font-style: italic;
-    color: #6d253b;
-}
-
-
-.chef-notes textarea,
-.recipe-description textarea {
-    font-style: normal;
-    color: black;
-    width: 80%;
-    min-height: 80px;
-    font-size: 17px;
-    line-height: 28px;   /* IMPORTANT */
-    resize: none;
-    outline: none;
-    background-color: #FFFDF2;
-    /* Blue lines */
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 27px,
-        #e4e4e4 28px
-    );
-  /* align with padding-top */
-    background-size: 100% 28px;
-
-    background-attachment: local; 
-}
-
-
-
-/* =========================
-   Servings
-========================= */
-.servings {
-    font-weight: 500;
-    text-align: center; 
-    font-family: 'Georgia', serif;
-    font-size: 20px;
-    font-style: italic;
-    color: #6d253b;
-    
-}
-
-.servings input{
-    border: none;
-    outline: none;
-    border-bottom: 1px solid #ddd;
-    background: transparent;
-    text-align: center; 
-    max-width: 70px;  /* prevent too big on large screens */
-    min-width: 20px;
-    width: 30;
-}
-
-
-/* =========================
-   Remove Buttons
-========================= */
-.remove-step,
-.remove-ingredient {
-    background: none;
-    border: none;
-    color: #b00020;
-    font-size: 20px;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.remove-ingredient:hover,
-.remove-step:hover {
-    color: red;
-}
-
-/* =========================
-   Visibility
-========================= */
-
-.card-small-card select{
-        border: none;
-    outline: none;
-    border-bottom: 1px solid #ddd;
-    background: transparent;
-    padding: 6px;
-    font-size: 15px;
-
-}
-
-
-
-/* =========================
-   TAGS (Detail Page)
-========================= */
-
-/* Tag Chip */
-.tag-select {
-    display: inline-block;
-    width: 50%;
-    border: none;
-    background: transparent;
-    
-}
-
-
-
-tag-select:focus {
-    outline: none;
-    border: none;
-}
-
-
-
-
-
-
-/* =========================
-   Responsive
-========================= */
-@media (max-width: 900px) {
-    .recipe-flex {
-        flex-direction: column;
-    }
-
-    .save-btn {
-        right: 30px;
-    }
-}
-
-
-@media (max-width: 900px) {
-    .recipe-page {
-        padding: 20px 5%; /* reduce padding for smaller screens */
-        gap: 20px;
-    }
-
-    .recipe-flex {
-        flex-direction: column; /* stack left and right columns */
-        padding: 10px;
-    }
-
-    .recipe-right {
-        padding-left: 0; /* remove left padding */
-    }
-}
-
-@media (max-width: 900px) {
-    .recipe-title input {
-        width: 100%;  /* full width of container */
-        font-size: clamp(24px, 5vw, 56px); /* scales with screen */
-    }
-}
-
-@media (max-width: 900px) {
-    .ingredient-form,
-    .step-form {
-        flex-wrap: wrap; /* wrap elements instead of shrinking */
-    }
-
-    .ingredient-form input,
-    .ingredient-form select,
-    .step-form input,
-    .step-form textarea {
-        width: 100%; /* take full width */
-        font-size: 16px;
-    }
-
-    .step-form textarea {
-        width: 100%;
-    }
-}
-
-@media (max-width: 900px) {
-    .upload-container,
-    .upload-box,
-    .step-upload-label {
-        width: 100%;  /* full width */
-        max-width: 100%;
-        margin: 0 auto;
-    }
-
-    .step-preview,
-    .preview-img {
-        width: 80px;
-        height: 80px;
-    }
-}
-
-@media (max-width: 900px) {
-    .servings input {
-        width: 50%;
-        max-width: 50px;
-    }
-}
-
-@media (max-width: 900px) {
-    .save-btn {
-        right: 10px;
-        padding: 10px 14px;
-        font-size: 14px;
-    }
-}
-

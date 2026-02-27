@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
-<head>
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'Recipe/css/edit_recipe.css' %}">
 {% endblock %}
-</head>
+
 {% block content %}
-<div class="head">
-</div>
 <div class="recipe-page">
     <form method="post" enctype="multipart/form-data" id="recipeForm">
         {% csrf_token %}
@@ -20,6 +18,7 @@
                 <div class="recipe-title">
                     {{ form.title }}
                 </div>
+                <p id="main-warning" class="form-warning" role="alert" aria-live="polite"></p>
 
                 <br>
 
@@ -27,10 +26,9 @@
                 <label>Tags:</label>
                 <select name="tags" class="tag-select" multiple>
                     {% for tag in popular_tags %}
-                        <option value="{{ tag.id }}"
-                            {% if tag in form.instance.tags.all %}selected{% endif %}>
-                            {{ tag.name }}
-                        </option>
+                    <option value="{{ tag.id }}" {% if tag in form.instance.tags.all %}selected{% endif %}>
+                        {{ tag.name }}
+                    </option>
                     {% endfor %}
                 </select>
 
@@ -49,58 +47,70 @@
                     </div>
                     <!-- Servings -->
                     <div class="servings">
-                        <label>Makes
-                        {{ form.number_of_servings }} Servings </label>
+                        <label>Servings: 
+                            {{ form.number_of_servings }} </label>
                     </div>
                 </div>
                 <br>
                 <!-- Chef Notes -->
                 <div class="chef-notes">
-                    <label>Chef's Notes:</label>
+                    <label>Chef's Notes</label>
                     {{ form.chefs_note }}
                 </div>
                 <br>
-  
+
             </div>
 
-            <!-- RIGHT SIDE IMAGE -->
-            <div class="recipe-right">
-                <div class="upload-container">
-                    
-                    <label for="id_image" class="upload-box">
-                        <div class="upload-content">
-                            <div class="plus-icon">+</div>
-                            
-                        </div>
-                            {% if form.instance.image %}
-                                <img id="image-preview"
-                                    src="{{ form.instance.image.url }}"
-                                    class="preview-img" />
-                            {% else %}
-                                <p>Add Recipe Image</p>
-                                <img id="image-preview" class="preview-img" />
-                            {% endif %}
-                    </label>
+        <!-- RIGHT SIDE IMAGE -->
+        <div class="recipe-right">
+            <div class="upload-container">
 
-                    {{ form.image }}
+                <label for="id_image" 
+                    class="upload-box {% if form.instance.image %}has-image{% endif %}">
 
-                </div>
+                    <div class="upload-content">
+                        <i class="fas fa-camera" style="font-size:32px; margin-bottom: 5px;"></i>
+                        <div class="plus-icon">+</div>
+                        <p>ADD PHOTO</p>
+                        <span style="font-size:10px; color:#8DA399; display:block; margin-top:5px;">
+                            Drop or click • Max 10MB
+                        </span>
+                    </div>
+
+                    {% if form.instance.image %}
+                        <img id="image-preview"
+                            src="{{ form.instance.image.url }}"
+                            class="preview-img" />
+                    {% else %}
+                        <img id="image-preview"
+                            class="preview-img" />
+                    {% endif %}
+
+                    <div class="polaroid-text">No photo yet...</div>
+
+                </label>
+
+                {{ form.image }}
+
             </div>
+        </div>
 
         </div>
 
         <!-- Ingredients Section -->
         <div class="section-card">
             <h3>Ingredients:</h3>
+            <p id="ingredient-warning" class="form-warning" role="alert" aria-live="polite"></p>
             {{ ingredient_formset.management_form }}
             <div id="ingredient-container">
                 {% for form in ingredient_formset %}
                 <div class="ingredient-form">
                     <span class="ingredient-number"></span>
-                    {{ form.id }} 
+                    {{ form.id }}
                     {{ form.name }}
                     {{ form.quantity }}
                     {{ form.unit }}
+                    <div style="display:none;">{{ form.DELETE }}</div>
                     <button type="button" class="remove-ingredient">&times;</button>
                 </div>
                 {% endfor %}
@@ -110,44 +120,42 @@
 
         <!-- Steps Section -->
         <div class="section-card">
-        <h3>Steps:</h3>
+            <h3>Steps:</h3>
             {{ step_formset.management_form }}
-            <div id="step-container">
+            <div id="step-container" data-autogrow="steps">
                 {% for form in step_formset %}
-                    <div class="step-form">
-                        <span class="step-number"></span>
-                        {{ form.id }}
-                        {{ form.instruction }}
+                <div class="step-form">
+                    <span class="step-number"></span>
+                    {{ form.id }}
+                    {{ form.instruction }}
 
-                        <div class="step-image-box">
-                            <label class="step-upload-label">
+                    <div class="step-image-box">
+                        <label class="step-upload-label">
 
-                                {{ form.image }}   <!-- ✅ FIXED -->
+                            {{ form.image }} <!-- ✅ FIXED -->
 
-                                {% if form.instance.image %}
-                                    <img src="{{ form.instance.image.url }}"
-                                        class="step-preview" >
-                                {% else %}
-                                    <div class="upload-placeholder">
-                                        ➕ Add Step Image
-                                    </div>
-                                    <img class="step-preview" style="display:none;">
-                                {% endif %}
+                            {% if form.instance.image %}
+                            <img src="{{ form.instance.image.url }}" class="step-preview">
+                            {% else %}
+                            <div class="upload-placeholder">
+                                ➕ Add Step Image
+                            </div>
+                            <img class="step-preview" style="display:none;">
+                            {% endif %}
 
-                            </label>
-                        </div>
-
-                        <div style="display:none;">{{ form.DELETE }}</div>
-                        <button type="button" class="remove-step">&times;</button>
+                        </label>
                     </div>
+
+                    <div style="display:none;">{{ form.DELETE }}</div>
+                    <button type="button" class="remove-step">&times;</button>
+                </div>
                 {% endfor %}
 
             </div>
             <button type="button" id="add-step" class="add-btn">+ Add Step</button>
         </div>
-        <div class="head">
-            <button type="submit" class="save-btn">SAVE RECIPE</button>
-        </div>
+        <!-- Save Button -->
+        <button type="submit" class="save-btn">SAVE RECIPE</button>
 
     </form>
 </div>
@@ -169,7 +177,7 @@
             </label>
         </div>
         <div style="display:none;">{{ step_formset.empty_form.DELETE }}</div>
-        
+
         <button type="button" class="remove-step">&times;</button>
     </div>
 </div>
