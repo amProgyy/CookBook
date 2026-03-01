@@ -15,7 +15,12 @@ body {
 ========================= */
 .recipe-page {
     gap: 60px;
-    padding: 100px 300px;
+    padding: 40px 300px;
+    transition: padding 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+body.sidebar-expanded .recipe-page {
+    padding: 40px 150px;
 }
 
 .recipe-flex {
@@ -292,42 +297,113 @@ label:hover::after {
    Ingredients
 ========================= */
 .ingredients-display-list {
-    list-style-position: outside;
-    list-style-type: decimal;
-    padding-left: 20px;
+    list-style-type: none;
+    padding-left: 0;
     margin: 0;
-    font-size: 20px;
-    color: #C88468;
-    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .ingredient-display-item {
-    display: list-item;
+    background-color: #F9F8F6;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    /* border-bottom: 1px solid #eee; */
-    padding: 15px 0;
+    justify-content: space-between;
 }
 
-.ingredient-display-item:last-child {
-    border-bottom: none;
+.ingredient-display-item:hover {
+    border-color: #E0DCD9;
 }
 
-.ingredient-input {
-    width: 70px;
+.ingredient-name-col {
+    flex: 1;
+    margin-right: 16px;
+}
+
+.ingredient-name-text {
+    font-weight: 500;
+    font-size: 18px;
+    color: #3E2F28;
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+}
+
+.ingredient-number {
+    color: #C88468;
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+.ingredient-measure-col {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.ingredient-input.quantity-input {
+    width: 60px;
     border: none;
     border-bottom: 1px solid #E0DCD9;
     background: transparent;
     font-size: 18px;
     text-align: center;
-    margin-right: 15px;
     outline: none;
-    color: #C88468;
-    font-weight: 600;
+    color: #3E2F28;
+    font-weight: 700;
+    margin-right: 0;
+    padding-bottom: 2px;
 }
 
-.ingredient-text {
-    font-size: 18px;
-    color: #444;
+.ingredient-input.quantity-input::-webkit-outer-spin-button,
+.ingredient-input.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+.ingredient-input.quantity-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.ingredient-unit-badge {
+    font-size: 14px;
+    color: #8DA399;
+    font-weight: 500;
+    min-width: 48px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid #E0DCD9;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.substitute-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #C88468;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-left: 5px;
+}
+
+.substitute-btn:hover {
+    background: #f1ece5;
+    border-color: #E0DCD9;
+    transform: translateY(-1px);
 }
 
 /* =========================
@@ -358,9 +434,17 @@ label:hover::after {
 }
 
 .step-image-display {
-    max-width: 300px;
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-image-display:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .no-steps {

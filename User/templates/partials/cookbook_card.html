@@ -28,12 +28,26 @@
         </div>
         {% endif %}
 
-        {% if is_favorites_page %}
-        <span class="cookbook-author">{{ recipe.author.username }}</span>
-        {% endif %}
-        <h2 class="cookbook-title">
-            <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
-        </h2>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            <div>
+                {% if is_favorites_page %}
+                <span class="cookbook-author">@{{ recipe.author.username }}</span>
+                {% endif %}
+                <h2 class="cookbook-title" style="margin-bottom: 0;">
+                    <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
+                </h2>
+            </div>
+            {% if is_favorites_page %}
+            <button class="btn-favorite" onclick="toggleFavorite('{{ recipe.id }}', this)" title="Remove from favorites"
+                style="flex-shrink: 0; background: none; border: none; cursor: pointer; padding: 0;">
+                <svg class="heart-icon favorited" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    style="width: 24px; height: 24px; stroke: #E63946; fill: #E63946; stroke-width: 2;">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </button>
+            {% endif %}
+        </div>
 
         <div class="cookbook-footer">
             <div>
@@ -50,7 +64,8 @@
             </div>
             {% if recipe.author == request.user %}
             <div class="cookbook-actions">
-                <a href="{% url 'edit_recipe' recipe_id=recipe.id %}" class="btn-edit">Edit</a>
+                <a href="{% url 'edit_recipe' recipe_id=recipe.id %}" class="btn-edit"
+                    onclick="confirmEdit(event, this.href)">Edit</a>
                 <button class="btn-delete" onclick="deleteRecipe('{{ recipe.id }}')">Delete</button>
             </div>
             {% endif %}

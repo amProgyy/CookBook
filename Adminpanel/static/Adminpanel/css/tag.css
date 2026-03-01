@@ -1,0 +1,37 @@
+/* tag.css */
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-item {
+    background: #f1ece5;
+    padding: 10px 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border: 1px solid #E0DCD9;
+}
+
+.tag-name {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    color: #3E2F28;
+}
+
+.delete-tag-form {
+    margin: 0;
+}
+
+.delete-tag-btn {
+    background: none;
+    border: none;
+    color: #E63946;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+}

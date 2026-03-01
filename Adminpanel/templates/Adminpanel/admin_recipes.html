@@ -4,6 +4,7 @@
 {% block title %}Manage Recipes | Admin | Cookbook{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'Adminpanel/css/tag.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -71,17 +72,13 @@
             <button type="submit">Add Tag</button>
         </form>
 
-        <div id="tag-container" style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <div id="tag-container" class="tag-container">
             {% for tag in all_tags %}
-            <div id="tag-item-{{ tag.id }}"
-                style="background: #f1ece5; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid #E0DCD9;">
-                <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">{{ tag.name
-                    }}</span>
-                <form method="POST" action="{% url 'admin_delete_tag' tag.id %}" class="delete-tag-form"
-                    style="margin: 0;">
+            <div id="tag-item-{{ tag.id }}" class="tag-item">
+                <span class="tag-name">{{ tag.name }}</span>
+                <form method="POST" action="{% url 'admin_delete_tag' tag.id %}" class="delete-tag-form">
                     {% csrf_token %}
-                    <button type="submit"
-                        style="background: none; border: none; color: #E63946; cursor: pointer; font-size: 16px; padding: 0;">&times;</button>
+                    <button type="submit" class="delete-tag-btn">&times;</button>
                 </form>
             </div>
             {% empty %}
@@ -99,9 +96,14 @@
         // Handle recipe deletion without reload
         const recipeForms = document.querySelectorAll('.delete-recipe-form');
         recipeForms.forEach(form => {
-            form.addEventListener('submit', function (e) {
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
-                if (!confirm('Are you sure you want to delete this recipe?')) return;
+                const confirmed = await savoryConfirm("Are you sure you want to delete this recipe?", {
+                    title: "Delete Recipe",
+                    confirmText: "Yes, Delete",
+                    cancelText: "Cancel"
+                });
+                if (!confirmed) return;
 
                 const currentForm = e.target;
                 const row = currentForm.closest('tr');
@@ -127,9 +129,14 @@
 
         // Function to bind delete event to a tag form wrapper
         function bindTagDeleteEvent(form) {
-            form.addEventListener('submit', function (e) {
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
-                if (!confirm('Are you sure you want to delete this tag?')) return;
+                const confirmed = await savoryConfirm("Are you sure you want to delete this tag?", {
+                    title: "Delete Tag",
+                    confirmText: "Yes, Delete",
+                    cancelText: "Cancel"
+                });
+                if (!confirmed) return;
 
                 const currentForm = e.target;
                 const tagDiv = currentForm.closest('div[id^="tag-item-"]');
@@ -184,14 +191,11 @@
                             const container = document.getElementById('tag-container');
                             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                             const newTagHtml = `
-                        <div id="tag-item-${data.tag_id}"
-                            style="background: #f1ece5; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid #E0DCD9;">
-                            <span style="font-family: 'Quicksand', sans-serif; font-weight: 600; color: #3E2F28;">${data.tag_name}</span>
-                            <form method="POST" action="/adminpanel/delete-tag/${data.tag_id}/" class="delete-tag-form"
-                                style="margin: 0;">
+                        <div id="tag-item-${data.tag_id}" class="tag-item">
+                            <span class="tag-name">${data.tag_name}</span>
+                            <form method="POST" action="/adminpanel/delete-tag/${data.tag_id}/" class="delete-tag-form">
                                 <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-                                <button type="submit"
-                                    style="background: none; border: none; color: #E63946; cursor: pointer; font-size: 16px; padding: 0;">&times;</button>
+                                <button type="submit" class="delete-tag-btn">&times;</button>
                             </form>
                         </div>
                         `;

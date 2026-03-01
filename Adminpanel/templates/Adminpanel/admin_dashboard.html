@@ -8,11 +8,18 @@
 
 {% block content %}
 <div class="admin-page">
-    <h1 class="admin-header">Admin Dashboard</h1>
+    <h1 class="admin-header">Approval Dashboard</h1>
 
     <!-- 1. PENDING RECIPES QUEUE -->
     <div class="admin-section">
         <h2 class="admin-section-title">Pending Recipe Requests</h2>
+        {% if messages %}
+        <div class="error-messages">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% if pending_recipes %}
         <table class="admin-table">
             <thead>
@@ -33,7 +40,8 @@
                         <a href="{% url 'recipe_detail' recipe.id %}" target="_blank"
                             class="btn-admin btn-view">View</a>
 
-                        <form method="POST" action="{% url 'admin_approve_recipe' recipe.id %}" style="display:inline;">
+                        <form method="POST" action="{% url 'admin_approve_recipe' recipe.id %}" style="display:inline;"
+                            onsubmit="confirmApprove(event, this);">
                             {% csrf_token %}
                             <button type="submit" class="btn-admin btn-approve">Approve</button>
                         </form>
@@ -42,7 +50,8 @@
                             onclick="toggleRejectForm('{{ recipe.id }}')">Reject</button>
 
                         <div id="reject-form-{{ recipe.id }}" class="reject-form">
-                            <form method="POST" action="{% url 'admin_reject_recipe' recipe.id %}">
+                            <form method="POST" action="{% url 'admin_reject_recipe' recipe.id %}"
+                                onsubmit="confirmReject(event, this);">
                                 {% csrf_token %}
                                 <textarea name="rejection_reason" rows="3" placeholder="Reason for rejection..."
                                     required></textarea><br>

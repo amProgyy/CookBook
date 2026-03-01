@@ -32,7 +32,12 @@ body {
 ========================= */
 .recipe-page {
     gap: 60px;
-    padding: 100px 300px;
+    padding: 40px 180px;
+    transition: padding 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+body.sidebar-expanded .recipe-page {
+    padding: 40px 100px;
 }
 
 .recipe-flex {
@@ -103,9 +108,20 @@ body {
 .ingredient-form,
 .step-form {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.ingredient-number,
+.step-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #C88468;
+    min-width: 35px;
+    margin-top: 5px;
 }
 
 .ingredient-form input,
@@ -115,13 +131,28 @@ body {
     outline: none;
     border-bottom: 1px dashed #C88468;
     background: transparent;
-    padding: 6px;
+    padding: 8px 4px;
     font-family: 'Caveat', cursive;
     /* Handwritten entries */
     color: #3E2F28;
     font-size: 24px;
     font-style: normal;
-    padding-bottom: 10px;
+}
+
+.ingredient-name {
+    flex: 3;
+    min-width: 150px;
+}
+
+.ingredient-quantity {
+    flex: 1;
+    min-width: 60px;
+    text-align: center;
+}
+
+.ingredient-unit {
+    flex: 1.5;
+    min-width: 100px;
 }
 
 
@@ -135,7 +166,7 @@ body {
     background: transparent;
     border: none;
     outline: none;
-    width: 60%;
+    flex: 1;
     min-height: 80px;
     font-size: 24px;
     font-family: 'Caveat', cursive;
@@ -148,7 +179,8 @@ body {
             transparent 27px,
             #E0DCD9 28px);
     background-size: 100% 28px;
-    background-attachment: local;
+    padding-left: 5px;
+
 }
 
 
@@ -156,19 +188,20 @@ body {
    Buttons
 ========================= */
 .add-btn {
+    display: block;
+    margin: 30px auto 10px;
     background: transparent;
     color: #8DA399;
-    border: 2px dashed #E4DFD8;
-    padding: 12px 24px;
-    border-radius: 4px;
-    cursor: pointer;
+    border: 1.5px solid #8DA399;
+    padding: 12px 35px;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
     font-weight: 700;
-    font-family: 'Quicksand', sans-serif;
-    text-transform: uppercase;
-    font-size: 14px;
-    margin-top: 10px;
+    cursor: pointer;
     transition: all 0.2s ease;
-    width: 100%;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    width: fit-content;
 }
 
 .add-btn:hover {
@@ -327,7 +360,8 @@ body {
    Step Image Upload
 ========================= */
 .step-image-box {
-    margin-top: 10px;
+    margin-top: 0;
+    margin-left: 10px;
 }
 
 .step-upload-label {
@@ -364,6 +398,7 @@ body {
     margin-top: 10px;
     display: none;
 }
+
 .step-upload-label.has-image .step-preview {
     display: block;
 }
@@ -450,24 +485,72 @@ h3 {
 
 .form-warning {
     display: none;
-    margin: 0 0 12px;
-    color: #B42318;
+    background: #FEF2F2;
+    border: 1.5px solid #FCA5A5;
+    color: #991B1B;
+    padding: 14px 24px;
+    border-radius: 12px;
     font-family: 'Quicksand', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(153, 27, 27, 0.08);
+    transition: all 0.3s ease;
 }
 
 .form-warning.show {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    animation: warningShake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.form-warning::before {
+    content: "⚠️";
+    font-size: 18px;
+}
+
+@keyframes warningShake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
 }
 
 .ingredient-row-warning {
     display: none;
-    margin: 0 0 10px 30px;
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    padding: 8px 16px;
+    border-radius: 8px;
     color: #B42318;
-    font-family: 'Quicksand', sans-serif;
     font-size: 13px;
     font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
+    text-align: center;
+    margin: 10px auto;
+    width: fit-content;
+    box-shadow: 0 2px 4px rgba(153, 27, 27, 0.05);
 }
 
 .ingredient-row-warning.show {

@@ -46,7 +46,7 @@
                     <td>
                         {% if not target_user.is_superuser or request.user == target_user %}
                         <form method="POST" action="{% url 'admin_delete_user' target_user.id %}"
-                            onsubmit="return confirm('WARNING: Are you sure you want to delete user @{{ target_user.username }}? This action cannot be undone and will delete all their recipes.');">
+                            onsubmit="confirmDeleteUser(event, this, '{{ target_user.username }}');">
                             {% csrf_token %}
                             <button type="submit" class="btn-admin btn-danger">Delete User</button>
                         </form>
@@ -64,4 +64,23 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function confirmDeleteUser(event, form, username) {
+        event.preventDefault();
+        const confirmed = await savoryConfirm(
+            `WARNING: Are you sure you want to delete user @${username}? This action cannot be undone and will delete all their recipes.`,
+            {
+                title: "Delete User",
+                confirmText: "Yes, Delete User",
+                cancelText: "Cancel"
+            }
+        );
+        if (confirmed) {
+            form.submit();
+        }
+    }
+</script>
 {% endblock %}

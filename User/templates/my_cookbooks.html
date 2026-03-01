@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Cookbooks | Cookbook{% endblock %}
+{% block title %}My Cookbooks | CookWise{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'User/css/user_style.css' %}">
@@ -13,6 +13,33 @@
         margin-top: 20px;
         margin-bottom: 10px;
         border-bottom: 2px solid #E0DCD9;
+    }
+
+    .btn-favorite {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s;
+    }
+
+    .btn-favorite:hover {
+        transform: scale(1.1);
+    }
+
+    .heart-icon {
+        width: 24px;
+        height: 24px;
+        stroke: #E63946;
+        fill: none;
+        stroke-width: 2;
+        transition: fill 0.3s;
+    }
+
+    .heart-icon.favorited {
+        fill: #E63946;
     }
 
     .tab-button {
@@ -140,10 +167,14 @@
         }
     }
 
-    function deleteRecipe(recipeId) {
-        if (!confirm("Are you sure you want to delete this recipe?")) {
-            return;
-        }
+    async function deleteRecipe(recipeId) {
+        const confirmed = await savoryConfirm("Are you sure you want to permanently delete this recipe from your cookbook?", {
+            title: "Delete Recipe",
+            confirmText: "Yes, Delete",
+            cancelText: "No, Keep it"
+        });
+
+        if (!confirmed) return;
 
         fetch("/recipe/delete/" + recipeId + "/", {
             method: "POST",
@@ -165,6 +196,46 @@
                 } else {
                     alert("Delete failed");
                 }
+            });
+    }
+
+    async function toggleFavorite(recipeId, btnElement) {
+        const confirmed = await savoryConfirm("Remove this recipe from your favorites collection?", {
+            title: "Remove Favorite",
+            confirmText: "Yes, Remove",
+            cancelText: "Keep it"
+        });
+
+        if (!confirmed) return;
+        fetch("/user/toggle-favorite/" + recipeId + "/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "unfavorited") {
+                    // Remove the card if we are on the favorites page
+                    const card = document.getElementById("recipe-" + recipeId);
+                    if (card) {
+                        card.remove();
+                        const grid = document.querySelector('.cookbook-grid');
+                        if (grid && grid.children.length === 0) {
+                            location.reload(); // Reload to show empty state
+                        }
+                    }
+                } else if (data.status === "favorited") {
+                    // Should be already favorited to be on this page, but handle just in case
+                    const heartSvg = btnElement.querySelector('.heart-icon');
+                    if (heartSvg) heartSvg.classList.add('favorited');
+                } else if (data.error) {
+                    console.error("Error toggling favorite:", data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Fetch error toggling favorite:", error);
             });
     }
 </script>

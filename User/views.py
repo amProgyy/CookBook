@@ -10,45 +10,51 @@ from User.models import Favorite, Notification
 
 
 def user_signup(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        first_name = request.POST['fname']
-        last_name = request.POST['lname']
-        password = request.POST['password']
+    if not request.user.is_authenticated:
+        if request.method == 'POST':
+            username = request.POST['username']
+            first_name = request.POST['fname']
+            last_name = request.POST['lname']
+            password = request.POST['password']
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
-        else:
-            user = User.objects.create_user(
-                username=username, 
-                first_name=first_name,
-                last_name=last_name,
-                password=password
-                )
-            login(request, user)
-            return redirect('login')
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists")
+            else:
+                user = User.objects.create_user(
+                    username=username, 
+                    first_name=first_name,
+                    last_name=last_name,
+                    password=password
+                    )
+                login(request, user)
+                return redirect('home_feed')
+    else:
+        return redirect('home_feed')
         
     return render(request, 'signup.html')
 
 
 
 def user_login(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+    if not request.user.is_authenticated:
+        if request.method == "POST":
+            username = request.POST.get("username")
+            password = request.POST.get("password")
 
-        if not User.objects.filter(username=username).exists():
-            messages.error(request, "Username does not exist")
-            return render(request, "login.html")
+            if not User.objects.filter(username=username).exists():
+                messages.error(request, "Username does not exist")
+                return render(request, "login.html")
 
-        user = authenticate(request, username=username, password=password)
+            user = authenticate(request, username=username, password=password)
 
-        if user is None:
-            messages.error(request, "Incorrect password")
-        else:
-            login(request, user)
-            return redirect("create_recipe")
-
+            if user is None:
+                messages.error(request, "Incorrect password")
+            else:
+                login(request, user)
+                return redirect("home_feed")
+    else:
+        return redirect('home_feed')
+        
     return render(request, "login.html")
 
 
@@ -115,10 +121,15 @@ def user_profile(request, username):
     favorites = Favorite.objects.filter(user=profile_user).select_related('recipe')
     favorite_recipes = [fav.recipe for fav in favorites if fav.recipe.visibility == Recipe.PUBLIC and fav.recipe.status == 'approved']
     
+    user_favorited_ids = []
+    if request.user.is_authenticated:
+        user_favorited_ids = list(Favorite.objects.filter(user=request.user).values_list('recipe_id', flat=True))
+
     context = {
         'profile_user': profile_user,
         'user_recipes': user_recipes,
         'favorite_recipes': favorite_recipes,
+        'user_favorited_ids': user_favorited_ids,
     }
     return render(request, 'user_profile.html', context)
 

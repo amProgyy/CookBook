@@ -1,5 +1,28 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}CookWise{% endblock %}
+{% block header_right %}
+<button class="share-btn" onclick="copyRecipeLink()"
+  style="display:flex; align-items:center; gap:8px; background:none; border:2px solid #C88468; color:#C88468; padding:8px 16px; border-radius:30px; font-family:'Quicksand', sans-serif; font-weight:700; cursor:pointer;"
+  title="Copy Link">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="18" cy="5" r="3"></circle>
+    <circle cx="6" cy="12" r="3"></circle>
+    <circle cx="18" cy="19" r="3"></circle>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+  </svg>
+  Share
+</button>
+<script>
+  function copyRecipeLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert("Link copied to clipboard!");
+    });
+  }
+</script>
+{% endblock %}
 
 {% block content %}
 
@@ -22,11 +45,63 @@
 
       <div class="author-actions" style="margin-top: 15px; display: flex; gap: 15px;">
         {% if request.user == recipe.author %}
-        <a href="{% url 'edit_recipe' recipe_id=recipe.id %}" class="edit-btn">Edit Recipe</a>
+        <a href="{% url 'edit_recipe' recipe_id=recipe.id %}" class="edit-btn"
+          onclick="confirmEdit(event, this.href)">Edit Recipe</a>
         <button class="delete-btn" onclick="deleteRecipe('{{ recipe.id }}')">Delete</button>
         {% endif %}
-        <button onclick="fetchNutrition('{{ recipe.id }}')" class="edit-btn" style="background-color: #8DA399;">Check
+        <button onclick="fetchNutrition('{{ recipe.id }}')" class="edit-btn" style="background-color: #8DA399;"
+          id="nutrition-btn">Check
           Nutrition</button>
+      </div>
+
+      <!-- Nutrition Facts Container -->
+      <div id="nutrition-container"
+        style="display: none; border: 2px solid #0f8a8a; border-radius: 4px; padding: 25px 20px 20px; position: relative; margin-top: 30px; margin-bottom: 20px; font-family: 'Quicksand', sans-serif;">
+        <div
+          style="position: absolute; top: -12px; left: 15px; background: #F4F1EA; padding: 0 10px; font-weight: 700; font-size: 16px; letter-spacing: 1px; display: flex; align-items: center;">
+          <span style="color: #0f8a8a; text-transform: uppercase;">Nutrition Facts</span>
+          <span style="color: #333; font-size: 13px; margin-left: 5px;">(PER SERVING)</span>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; border-bottom: 1px solid #e0dcd9; padding-bottom: 20px; margin-bottom: 15px;">
+          <div style="text-align: left;">
+            <div style="font-size: 26px; color: #0f8a8a; font-weight: 500;" id="nutri-calories-val">--</div>
+            <div style="font-size: 13px; font-weight: 700; color: #111; letter-spacing: 0.5px;">CALORIES</div>
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 26px; color: #0f8a8a; font-weight: 500;" id="nutri-fat-val">--</div>
+            <div style="font-size: 13px; font-weight: 700; color: #111; letter-spacing: 0.5px;">FAT</div>
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 26px; color: #0f8a8a; font-weight: 500;" id="nutri-carbs-val">--</div>
+            <div style="font-size: 13px; font-weight: 700; color: #111; letter-spacing: 0.5px;">CARBS</div>
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 26px; color: #0f8a8a; font-weight: 500;" id="nutri-protein-val">--</div>
+            <div style="font-size: 13px; font-weight: 700; color: #111; letter-spacing: 0.5px;">PROTEIN</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- <button
+            style="display: inline-flex; align-items: center; gap: 5px; background: #e8e4dc; border: none; padding: 4px 8px; font-family: 'Quicksand', sans-serif; font-size: 14px; font-weight: 600; text-decoration: underline; color: #111; align-self: flex-start; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="#0f8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Show Full Nutrition Label
+          </button> -->
+          <p style="font-size: 13px; color: #666; line-height: 1.5; margin: 0;">
+            Nutrition information is calculated using an ingredient database and should be considered an estimate. In
+            cases where multiple ingredient alternatives are given, the first listed is calculated for nutrition.
+            Garnishes and optional ingredients are not included.
+          </p>
+        </div>
       </div>
 
       <br>
@@ -93,17 +168,33 @@
   <!-- Ingredients Section -->
   <div class="section-card">
     <h3>Ingredients:</h3>
-    <ol id="ingredientsList" class="ingredients-display-list">
+    <ul id="ingredientsList" class="ingredients-display-list">
       {% for ing in ingredients %}
       <li class="ingredient-display-item" data-base="{{ ing.quantity }}">
-        <span class="ingredient-text">{{ ing.name }} : </span>
-        <input type="number" class="ingredient-input" value="{{ ing.quantity|floatformat:1 }}" min="0" step="0.5">
-        <span class="ingredient-text">{{ ing.unit }} </span>
-        <button onclick="getSubstitute('{{ ing.name }}')"
-          style="margin-left:auto; cursor:pointer; background:transparent; border:1px solid #C88468; color:#C88468; border-radius:15px; padding:4px 10px; font-size:12px; font-family:'Quicksand', sans-serif;">Substitute</button>
+        <div class="ingredient-name-col">
+          <p class="ingredient-name-text"><span class="ingredient-number">{{ forloop.counter }}.</span> {{ ing.name }}
+          </p>
+        </div>
+        <div class="ingredient-measure-col">
+          <input type="number" class="ingredient-input quantity-input" value="{{ ing.quantity|floatformat:1 }}" min="0"
+            step="0.5">
+          <span class="ingredient-unit-badge">{% if ing.unit %}{{ ing.unit }}{% else %}unit{% endif %}</span>
+          <button onclick="getSubstitute('{{ ing.name|escapejs }}', this)" class="substitute-btn"
+            title="Find Substitute">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M21.5 2v6h-6M2.13 15.57a9 9 0 1 0 3.84-10.36L2 8M21.5 22v-6h-6M2.13 8.43a9 9 0 1 1 3.84 10.36L2 16" />
+            </svg>
+          </button>
+        </div>
+        <!-- Substitute Results Container -->
+        <div class="substitute-results"
+          style="display: none; width: 100%; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #E0DCD9; font-size: 15px; color: #555; font-family: 'Quicksand', sans-serif;">
+        </div>
       </li>
       {% endfor %}
-    </ol>
+    </ul>
   </div>
 
   <!-- Steps Section -->
@@ -130,10 +221,14 @@
 <!-- JS -->
 <script src="{% static 'Recipe/js/detail.js' %}"></script>
 <script>
-  function deleteRecipe(recipeId) {
-    if (!confirm("Are you sure you want to delete this recipe?")) {
-      return;
-    }
+  async function deleteRecipe(recipeId) {
+    const confirmed = await savoryConfirm("Are you sure you want to permanently delete this recipe?", {
+      title: "Delete Recipe",
+      confirmText: "Yes, Delete",
+      cancelText: "No, Keep it"
+    });
+
+    if (!confirmed) return;
 
     fetch(`/recipe/delete/${recipeId}/`, {
       method: "POST",
@@ -153,31 +248,84 @@
   }
 
   function fetchNutrition(recipeId) {
-    alert("Fetching nutrition data from Spoonacular API...");
-    fetch(`/recipe/nutrition/${recipeId}/`)
+    const btn = document.getElementById('nutrition-btn');
+    const container = document.getElementById('nutrition-container');
+
+    // Toggle container if already loaded
+    if (container.style.display === 'block') {
+      container.style.display = 'none';
+      btn.innerText = 'Check Nutrition';
+      return;
+    }
+
+    btn.innerText = 'Loading...';
+    btn.disabled = true;
+
+    fetch(`/nutrition/${recipeId}/`)
       .then(response => response.json())
       .then(data => {
+        btn.disabled = false;
+
         if (data.calories) {
-          alert(`Nutrition Facts:\nCalories: ${data.calories.value}${data.calories.unit}\nCarbs: ${data.carbs.value}${data.carbs.unit}\nFat: ${data.fat.value}${data.fat.unit}\nProtein: ${data.protein.value}${data.protein.unit}\n\n${data.status || ''}`);
+          btn.innerText = 'Hide Nutrition';
+          document.getElementById('nutri-calories-val').innerText = Math.round(data.calories.value);
+          document.getElementById('nutri-fat-val').innerText = Math.round(data.fat.value) + data.fat.unit;
+          document.getElementById('nutri-carbs-val').innerText = Math.round(data.carbs.value) + data.carbs.unit;
+          document.getElementById('nutri-protein-val').innerText = Math.round(data.protein.value) + data.protein.unit;
+          container.style.display = 'block';
         } else {
           alert("Nutrition data not available or missing API Key.");
+          btn.innerText = 'Check Nutrition';
         }
       })
-      .catch(err => alert("Failed to connect to API."));
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerText = 'Check Nutrition';
+        alert("Failed to connect to API.");
+      });
   }
 
-  function getSubstitute(ingredientName) {
-    alert("Looking up substitutes for " + ingredientName + "...");
-    fetch(`/recipe/substitute/${encodeURIComponent(ingredientName)}/`)
+  async function getSubstitute(ingredientName, btnElement) {
+    const parentLi = btnElement.closest('.ingredient-display-item');
+    const resultsDiv = parentLi.querySelector('.substitute-results');
+
+    // Toggle container if already loaded/showing
+    if (resultsDiv.style.display === 'block') {
+      resultsDiv.style.display = 'none';
+      return;
+    }
+
+    const confirmed = await savoryConfirm(`Lookup ingredient substitutes for <b>${ingredientName}</b>?`, {
+      title: "Find Substitutes",
+      confirmText: "Yes, search",
+      cancelText: "Cancel"
+    });
+
+    if (!confirmed) return;
+
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<span style="color: #8DA399;"><strong>Searching...</strong></span>';
+
+    fetch(`/substitute/${encodeURIComponent(ingredientName)}/`)
       .then(response => response.json())
       .then(data => {
         if (data.substitutes && data.substitutes.length > 0) {
-          alert(`Substitutes for ${ingredientName}:\n` + data.substitutes.join('\n') + `\n\n${data.message || ''}`);
+          let html = `<strong style="color: #3E2F28;">Substitutes for ${ingredientName}:</strong><ul style="margin-top: 8px; padding-left: 20px; color: #444; list-style-type: disc;">`;
+          data.substitutes.forEach(sub => {
+            html += `<li style="margin-bottom: 4px;">${sub}</li>`;
+          });
+          html += `</ul>`;
+          if (data.message) {
+            html += `<p style="margin-top: 8px; font-style: italic; color: #8DA399;">${data.message}</p>`;
+          }
+          resultsDiv.innerHTML = html;
         } else {
-          alert("No substitutes found or missing API Key.");
+          resultsDiv.innerHTML = `<span style="color:#C88468;">No substitutes found or missing API Key.</span>`;
         }
       })
-      .catch(err => alert("Failed to connect to API."));
+      .catch(err => {
+        resultsDiv.innerHTML = `<span style="color:#C88468;">Failed to connect to API.</span>`;
+      });
   }
 
 </script>

@@ -1,0 +1,79 @@
+.notifications-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 15px;
+}
+
+.notifications-title {
+    font-family: 'Playfair Display', serif;
+    color: #3E2F28;
+}
+
+.notifications-card {
+    background: #FFFFFF;
+    border: 1px solid #E0DCD9;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
+    padding: 20px;
+    box-shadow: 0 4px 20px -2px rgba(62, 47, 40, 0.15);
+}
+
+.notification-item {
+    padding: 15px 0;
+    border-bottom: 1px dashed #E0DCD9;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-unread-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #C88468;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.notification-message {
+    display: inline;
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    color: #3E2F28;
+    font-size: 16px;
+}
+
+.notification-link-rejected {
+    color: #C88468;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.notification-link-rejected:hover {
+    color: #a46b53;
+}
+
+.notification-link-approved {
+    color: #3E2F28;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.notification-link-approved:hover {
+    color: #1a1411;
+}
+
+.notification-time {
+    color: #8DA399;
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+}
+
+.notification-empty {
+    font-family: 'Quicksand', sans-serif;
+    color: #8DA399;
+    font-style: italic;
+    text-align: center;
+}

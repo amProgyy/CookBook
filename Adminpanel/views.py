@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import JsonResponse
 from Recipe.models import Recipe, Tag
+from User.models import Notification
 
 def is_admin(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
@@ -76,6 +77,11 @@ def approve_recipe(request, recipe_id):
     if request.method == "POST":
         recipe.status = 'approved'
         recipe.save()
+        Notification.objects.create(
+            user=recipe.author,
+            recipe=recipe,
+            message=f"Your recipe '{recipe.title}' has been approved!"
+        )
         messages.success(request, f'Recipe "{recipe.title}" has been approved.')
     return redirect('admin_dashboard')
 
@@ -87,13 +93,22 @@ def reject_recipe(request, recipe_id):
         recipe.status = 'rejected'
         recipe.rejection_reason = reason
         recipe.save()
-        messages.success(request, f'Recipe "{recipe.title}" has been rejected.')
+        Notification.objects.create(
+            user=recipe.author,
+            recipe=recipe,
+            message=f"Your recipe '{recipe.title}' was rejected. Reason: {reason if reason else 'No specific reason provided.'}"
+        )
+    messages.success(request, f'Recipe "{recipe.title}" has been rejected.')
     return redirect('admin_dashboard')
 
 @user_passes_test(is_admin, login_url='/adminpanel/login/')
 def delete_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == "POST":
+        Notification.objects.create(
+            user=recipe.author,
+            message=f"Your recipe '{recipe.title}' was deleted by an administrator."
+        )
         recipe.delete()
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'message': 'Recipe deleted successfully.'})

@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block title %}Edit | CookWise{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'Recipe/css/edit_recipe.css' %}">
+{% endblock %}
+
+{% block header_right %}
+<button type="submit" form="recipeForm" class="save-btn" style="background:#C88468; color:#fff; border:none; padding:10px 24px; border-radius:30px; font-family:'Quicksand', sans-serif; font-weight:700; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(200, 132, 104, 0.3);">SAVE RECIPE</button>
 {% endblock %}
 
 {% block content %}
@@ -47,7 +51,7 @@
                     </div>
                     <!-- Servings -->
                     <div class="servings">
-                        <label>Servings: 
+                        <label>Servings:
                             {{ form.number_of_servings }} </label>
                     </div>
                 </div>
@@ -61,39 +65,35 @@
 
             </div>
 
-        <!-- RIGHT SIDE IMAGE -->
-        <div class="recipe-right">
-            <div class="upload-container">
+            <!-- RIGHT SIDE IMAGE -->
+            <div class="recipe-right">
+                <div class="upload-container">
 
-                <label for="id_image" 
-                    class="upload-box {% if form.instance.image %}has-image{% endif %}">
+                    <label for="id_image" class="upload-box {% if form.instance.image %}has-image{% endif %}">
 
-                    <div class="upload-content">
-                        <i class="fas fa-camera" style="font-size:32px; margin-bottom: 5px;"></i>
-                        <div class="plus-icon">+</div>
-                        <p>ADD PHOTO</p>
-                        <span style="font-size:10px; color:#8DA399; display:block; margin-top:5px;">
-                            Drop or click • Max 10MB
-                        </span>
-                    </div>
+                        <div class="upload-content">
+                            <i class="fas fa-camera" style="font-size:32px; margin-bottom: 5px;"></i>
+                            <div class="plus-icon">+</div>
+                            <p>ADD PHOTO</p>
+                            <span style="font-size:10px; color:#8DA399; display:block; margin-top:5px;">
+                                Drop or click • Max 10MB
+                            </span>
+                        </div>
 
-                    {% if form.instance.image %}
-                        <img id="image-preview"
-                            src="{{ form.instance.image.url }}"
-                            class="preview-img" />
-                    {% else %}
-                        <img id="image-preview"
-                            class="preview-img" />
-                    {% endif %}
+                        {% if form.instance.image %}
+                        <img id="image-preview" src="{{ form.instance.image.url }}" class="preview-img" />
+                        {% else %}
+                        <img id="image-preview" class="preview-img" />
+                        {% endif %}
 
-                    <div class="polaroid-text">No photo yet...</div>
+                        <div class="polaroid-text">No photo yet...</div>
 
-                </label>
+                    </label>
 
-                {{ form.image }}
+                    {{ form.image }}
 
+                </div>
             </div>
-        </div>
 
         </div>
 
@@ -154,8 +154,7 @@
             </div>
             <button type="button" id="add-step" class="add-btn">+ Add Step</button>
         </div>
-        <!-- Save Button -->
-        <button type="submit" class="save-btn">SAVE RECIPE</button>
+        
 
     </form>
 </div>

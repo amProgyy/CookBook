@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ profile_user.username }}'s Profile | Cookbook{% endblock %}
+{% block title %}{{ profile_user.username }}'s Profile | CookWise{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'Recipe/css/home_feed.css' %}">
@@ -60,7 +60,7 @@
         {% for recipe in user_recipes %}
         <article class="feed-card" id="recipe-card-{{ recipe.id }}">
             <div class="feed-card-header">
-                <span class="feed-author">{{ recipe.author.username }}</span>
+                <a href="{% url 'user_profile' recipe.author.username %}" class="feed-author">@{{ recipe.author.username}}</a>
             </div>
 
             <!-- Media -->
@@ -74,8 +74,46 @@
 
             <!-- Content -->
             <div class="feed-content">
-                <h2 class="feed-title"><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></h2>
+                <div class="feed-title-row">
+                    <h2 class="feed-title"><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></h2>
+
+                    <!-- Actions: Like Buttons -->
+                    <div class="feed-actions">
+                        {% if user.is_authenticated %}
+                        <button class="btn-favorite" onclick="toggleFavorite('{{ recipe.id }}', this)">
+                            <svg class="heart-icon {% if recipe.id in user_favorited_ids %}favorited{% endif %}"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        </button>
+                        {% else %}
+                        <button class="btn-favorite"
+                            onclick="showLoginWarning(event, 'Please log in to add to your favorites collection.')">
+                            <svg class="heart-icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="feed-meta">
+                    <span class="feed-servings">
+                        <svg class="people-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        {{ recipe.number_of_servings }} Servings
+                    </span>
+                </div>
+
                 <p class="feed-description">
+                    <a href="{% url 'user_profile' recipe.author.username %}" class="feed-author">@{{recipe.author.username }}</a>
                     {{ recipe.description|truncatewords:25 }}
                 </p>
 
@@ -86,6 +124,7 @@
                     {% endfor %}
                 </div>
                 {% endif %}
+
                 <time class="feed-time">{{ recipe.created_at|timesince }} ago</time>
             </div>
         </article>
@@ -103,7 +142,7 @@
         {% for recipe in favorite_recipes %}
         <article class="feed-card" id="recipe-card-{{ recipe.id }}">
             <div class="feed-card-header">
-                <span class="feed-author">{{ recipe.author.username }}</span>
+                <a href="{% url 'user_profile' recipe.author.username %}" class="feed-author">@{{ recipe.author.username}}</a>
             </div>
 
             <!-- Media -->
@@ -117,10 +156,57 @@
 
             <!-- Content -->
             <div class="feed-content">
-                <h2 class="feed-title"><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></h2>
+                <div class="feed-title-row">
+                    <h2 class="feed-title"><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></h2>
+
+                    <!-- Actions: Like Buttons -->
+                    <div class="feed-actions">
+                        {% if user.is_authenticated %}
+                        <button class="btn-favorite" onclick="toggleFavorite('{{ recipe.id }}', this)">
+                            <svg class="heart-icon {% if recipe.id in user_favorited_ids %}favorited{% endif %}"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        </button>
+                        {% else %}
+                        <button class="btn-favorite"
+                            onclick="showLoginWarning(event, 'Please log in to add to your favorites collection.')">
+                            <svg class="heart-icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="feed-meta">
+                    <span class="feed-servings">
+                        <svg class="people-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        {{ recipe.number_of_servings }} Servings
+                    </span>
+                </div>
+
                 <p class="feed-description">
+                    <a href="{% url 'user_profile' recipe.author.username %}" class="feed-author">@{{recipe.author.username }}</a>
                     {{ recipe.description|truncatewords:25 }}
                 </p>
+
+                {% if recipe.tags.all %}
+                <div class="feed-tags">
+                    {% for tag in recipe.tags.all %}
+                    #{{ tag.name }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 <time class="feed-time">{{ recipe.created_at|timesince }} ago</time>
             </div>
         </article>
@@ -133,4 +219,43 @@
     </div>
 
 </div>
+
+<!-- JavaScript for toggling favorite hearts via AJAX -->
+<script>
+    async function toggleFavorite(recipeId, btnElement) {
+        const heartSvg = btnElement.querySelector('.heart-icon');
+        const isCurrentlyFavorited = heartSvg.classList.contains('favorited');
+
+        if (isCurrentlyFavorited) {
+            const confirmed = await savoryConfirm("Remove this recipe from your favorites collection?", {
+                title: "Remove Favorite",
+                confirmText: "Yes, Remove",
+                cancelText: "Keep it"
+            });
+            if (!confirmed) return;
+        }
+
+        fetch("/user/toggle-favorite/" + recipeId + "/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const heartSvg = btnElement.querySelector('.heart-icon');
+                if (data.status === "favorited") {
+                    heartSvg.classList.add('favorited');
+                } else if (data.status === "unfavorited") {
+                    heartSvg.classList.remove('favorited');
+                } else if (data.error) {
+                    console.error("Error toggling favorite:", data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Fetch error toggling favorite:", error);
+            });
+    }
+</script>
 {% endblock %}

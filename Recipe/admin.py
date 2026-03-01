@@ -15,12 +15,14 @@ class RecipeAdmin(admin.ModelAdmin):
                 if obj.status == 'approved':
                     Notification.objects.create(
                         user=obj.author,
+                        recipe=obj,
                         message=f"Your recipe '{obj.title}' has been approved!"
                     )
                 elif obj.status == 'rejected':
                     reason = obj.rejection_reason if obj.rejection_reason else "No specific reason provided."
                     Notification.objects.create(
                         user=obj.author,
+                        recipe=obj,
                         message=f"Your recipe '{obj.title}' was rejected. Reason: {reason}"
                     )
         super().save_model(request, obj, form, change)

@@ -35,11 +35,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const warning = document.createElement("p");
         warning.className = "ingredient-row-warning";
         warning.setAttribute("aria-live", "polite");
-        warning.style.display = "none";
-        warning.style.color = "#B42318";
-        warning.style.margin = "0 0 10px 30px";
-        warning.style.fontWeight = "600";
-        warning.style.fontSize = "13px";
         form.insertAdjacentElement("afterend", warning);
         return warning;
     }
@@ -48,16 +43,12 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!field) return;
         field.classList.remove("input-error");
         field.removeAttribute("aria-invalid");
-        field.style.borderBottomColor = "";
-        field.style.borderBottomWidth = "";
     }
 
     function markFieldError(field) {
         if (!field) return;
         field.classList.add("input-error");
         field.setAttribute("aria-invalid", "true");
-        field.style.borderBottomColor = "#B42318";
-        field.style.borderBottomWidth = "2px";
     }
 
     function clearRowWarning(form) {
@@ -87,33 +78,24 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!ingredientWarning) return;
         ingredientWarning.textContent = message;
         ingredientWarning.classList.add("show");
-        ingredientWarning.style.display = "block";
-        ingredientWarning.style.color = "#B42318";
-        ingredientWarning.style.fontWeight = "700";
-        ingredientWarning.style.fontSize = "14px";
     }
 
     function clearMainWarning() {
         if (!mainWarning) return;
         mainWarning.textContent = "";
         mainWarning.classList.remove("show");
-        mainWarning.style.display = "none";
     }
 
     function showMainWarning(message) {
         if (!mainWarning) return;
         mainWarning.textContent = message;
         mainWarning.classList.add("show");
-        mainWarning.style.display = "block";
-        mainWarning.style.color = "#B42318";
-        mainWarning.style.fontWeight = "700";
-        mainWarning.style.fontSize = "14px";
     }
 
     function updateIngredientNumbers() {
         ingContainer.querySelectorAll(".ingredient-form:not(.deleted-ingredient)").forEach((item, i) => {
             const span = item.querySelector(".ingredient-number");
-            if (span) span.textContent = `${i + 1}. `;
+            if (span) span.textContent = `${i + 1}.`;
         });
     }
 
@@ -292,12 +274,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (recipeForm) {
-        recipeForm.addEventListener("submit", function (e) {
+        recipeForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
             const isMainValid = validateMainFields();
             const areIngredientsValid = validateIngredients();
 
             if (!isMainValid || !areIngredientsValid) {
-                e.preventDefault();
                 if (!isMainValid) {
                     const mainSection = mainWarning ? mainWarning.closest(".recipe-left") : null;
                     if (mainSection) {
@@ -309,6 +292,23 @@ document.addEventListener("DOMContentLoaded", function () {
                         section.scrollIntoView({ behavior: "smooth", block: "center" });
                     }
                 }
+                return;
+            }
+
+            const isEditMode = window.location.pathname.toLowerCase().includes('edit');
+            const modalTitle = isEditMode ? "Warning" : "Confirm";
+            const modalMessage = isEditMode
+                ? "Are you sure you want to save the changes to this recipe?"
+                : "Are you ready to publish your new recipe?";
+
+            const confirmed = await savoryConfirm(modalMessage, {
+                title: modalTitle,
+                confirmText: "Yes, Save",
+                cancelText: "Keep Editing"
+            });
+
+            if (confirmed) {
+                recipeForm.submit();
             }
         });
     }
@@ -324,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
             previousServings = parseFloat(this.value) || 1;
         });
 
-        servingsInput.addEventListener("change", function () {
+        servingsInput.addEventListener("change", async function () {
             const currentServings = parseFloat(this.value);
 
             if (!currentServings || currentServings <= 0 || previousServings <= 0 || previousServings === currentServings) {
@@ -333,7 +333,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Ask user if they want to scale the ingredients
-            const doScale = confirm(`You changed servings from ${previousServings} to ${currentServings}. Scale ingredient quantities?`);
+            const doScale = await savoryConfirm(`You changed servings from ${previousServings} to ${currentServings}. Should I scale the ingredient quantities for you?`, {
+                title: "Scale Ingredients?",
+                confirmText: "Yes, Scale",
+                cancelText: "No"
+            });
 
             if (doScale) {
                 const scale = currentServings / previousServings;
@@ -369,8 +373,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function autoGrowStepTextarea(textarea) {
         if (!textarea) return;
+
+        // Reset height to let it shrink if text was deleted
         textarea.style.height = "auto";
-        textarea.style.height = `${textarea.scrollHeight}px`;
+
+        // Let CSS minimum handle empty textareas completely
+        if (!textarea.value.trim()) {
+            textarea.style.height = "";
+            return;
+        }
+
+        // Apply scroll height to override min-height and grow
+        const newHeight = textarea.scrollHeight;
+        if (newHeight > 0) {
+            textarea.style.height = `${newHeight}px`;
+        }
     }
 
     function autoGrowAllStepTextareas() {
