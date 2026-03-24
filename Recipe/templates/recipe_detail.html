@@ -2,19 +2,32 @@
 {% load static %}
 {% block title %}CookWise{% endblock %}
 {% block header_right %}
-<button class="share-btn" onclick="copyRecipeLink()"
-  style="display:flex; align-items:center; gap:8px; background:none; border:2px solid #C88468; color:#C88468; padding:8px 16px; border-radius:30px; font-family:'Quicksand', sans-serif; font-weight:700; cursor:pointer;"
-  title="Copy Link">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="18" cy="5" r="3"></circle>
-    <circle cx="6" cy="12" r="3"></circle>
-    <circle cx="18" cy="19" r="3"></circle>
-    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-  </svg>
-  Share
-</button>
+<div style="display: flex; gap: 10px; align-items: center;">
+  <a href="{% url 'download_recipe_pdf' recipe_id=recipe.id %}" class="share-btn"
+    style="display:flex; align-items:center; justify-content:center; background:none; border:2px solid #C88468; color:#C88468; width:40px; height:40px; border-radius:50%; cursor:pointer; text-decoration:none; transition: all 0.2s ease;"
+    title="Download PDF" onmouseover="this.style.backgroundColor='#C88468'; this.style.color='white';"
+    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#C88468';">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+  </a>
+  <button class="share-btn" onclick="copyRecipeLink()"
+    style="display:flex; align-items:center; justify-content:center; background:none; border:2px solid #C88468; color:#C88468; width:40px; height:40px; border-radius:50%; cursor:pointer; transition: all 0.2s ease;"
+    title="Copy Link" onmouseover="this.style.backgroundColor='#C88468'; this.style.color='white';"
+    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#C88468';">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+</div>
 <script>
   function copyRecipeLink() {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -84,18 +97,7 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
-          <!-- <button
-            style="display: inline-flex; align-items: center; gap: 5px; background: #e8e4dc; border: none; padding: 4px 8px; font-family: 'Quicksand', sans-serif; font-size: 14px; font-weight: 600; text-decoration: underline; color: #111; align-self: flex-start; cursor: pointer;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke="#0f8a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Show Full Nutrition Label
-          </button> -->
+
           <p style="font-size: 13px; color: #666; line-height: 1.5; margin: 0;">
             Nutrition information is calculated using an ingredient database and should be considered an estimate. In
             cases where multiple ingredient alternatives are given, the first listed is calculated for nutrition.
@@ -133,16 +135,12 @@
           <label for="personsInput">Servings:</label>
           <input type="number" id="personsInput" class="serving-input" value="{{ recipe.number_of_servings }}"
             data-base="{{ recipe.number_of_servings }}" min="1" step="1">
-          <span id="scaleInfo" class="meta-text" style="display:none;"></span>
-          <button type="button" id="resetScaleBtn" class="reset-scale-btn" style="display:none;"
-            title="Reset ingredients to original servings">
-            Reset
-          </button>
+          <span
+            style="font-family: 'Playfair Display', serif; font-size: 20px; color: #3E2F28;">{{recipe.servings_unit|default:"persons"}}</span>
+
 
         </div>
       </div>
-
-      <br>
 
     </div>
 
@@ -161,6 +159,14 @@
       <div class="detail-actions">
         <p class="created-date">Created: {{ recipe.created_at|date:"M d, Y" }}</p>
       </div>
+      <div class="reset-scale-btn-container">
+        <span id="scaleInfo" class="meta-text" style="display:none;"></span>
+        <button type="button" id="resetScaleBtn" class="reset-scale-btn" style="display:none;"
+          title="Reset ingredients to original servings">
+          Reset
+        </button>
+      </div>
+
     </div>
 
   </div>
@@ -218,6 +224,7 @@
 
 </div>
 
+{% csrf_token %}
 <!-- JS -->
 <script src="{% static 'Recipe/js/detail.js' %}"></script>
 <script>
@@ -230,10 +237,10 @@
 
     if (!confirmed) return;
 
-    fetch(`/recipe/delete/${recipeId}/`, {
+    fetch(`/delete/${recipeId}/`, {
       method: "POST",
       headers: {
-        "X-CSRFToken": "{{ csrf_token }}",
+        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]') ? document.querySelector('[name=csrfmiddlewaretoken]').value : '{{ csrf_token }}',
         "X-Requested-With": "XMLHttpRequest"
       }
     })

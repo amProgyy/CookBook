@@ -6,7 +6,9 @@
 {% endblock %}
 
 {% block header_right %}
-<button type="submit" form="recipeForm" class="save-btn" style="background:#C88468; color:#fff; border:none; padding:10px 24px; border-radius:30px; font-family:'Quicksand', sans-serif; font-weight:700; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(200, 132, 104, 0.3);">SAVE RECIPE</button>
+<button type="submit" form="recipeForm" class="save-btn"
+    style="background:#C88468; color:#fff; border:none; padding:10px 24px; border-radius:30px; font-family:'Quicksand', sans-serif; font-weight:700; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(200, 132, 104, 0.3);">SAVE
+    RECIPE</button>
 {% endblock %}
 
 {% block content %}
@@ -52,7 +54,8 @@
                     <!-- Servings -->
                     <div class="servings">
                         <label>Servings:
-                            {{ form.number_of_servings }} </label>
+                            {{ form.number_of_servings }}
+                            {{ form.servings_unit }} </label>
                     </div>
                 </div>
                 <br>
@@ -86,7 +89,9 @@
                         <img id="image-preview" class="preview-img" />
                         {% endif %}
 
-                        <div class="polaroid-text">No photo yet...</div>
+                        <div class="polaroid-text">
+                            {% if form.instance.image %}delicius !{% else %}No photo yet...{% endif %}
+                        </div>
 
                     </label>
 
@@ -154,7 +159,7 @@
             </div>
             <button type="button" id="add-step" class="add-btn">+ Add Step</button>
         </div>
-        
+
 
     </form>
 </div>

@@ -128,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
             personsInput.value = newServings;
 
             const normalizedScale = newServings / baseServings;
-            this.value = formatIngredientQty(baseQty * normalizedScale);
 
             ingredients.forEach(other => {
                 if (other === item) return;
@@ -141,6 +140,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     otherInput.value = formatIngredientQty(otherBase * normalizedScale);
                 }
             });
+
+            isUpdating = false;
+            updateScaleUI();
+        });
+
+        input.addEventListener("change", function () {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            const newQty = snapToHalf(this.value);
+            if (!isNaN(newQty) && newQty > 0 && !isNaN(baseQty) && baseQty > 0) {
+                const scale = newQty / baseQty;
+                let newServings = Math.round(baseServings * scale);
+                if (newServings <= 0) newServings = 1;
+                const normalizedScale = newServings / baseServings;
+                this.value = formatIngredientQty(baseQty * normalizedScale);
+            }
 
             isUpdating = false;
             updateScaleUI();

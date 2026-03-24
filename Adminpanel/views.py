@@ -13,25 +13,9 @@ def is_admin(user):
 def admin_login(request):
     if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
         return redirect('admin_dashboard')
+    return redirect('login')
 
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            if user.is_staff or user.is_superuser:
-                login(request, user)
-                return redirect('admin_dashboard')
-            else:
-                messages.error(request, "You do not have administrator permissions.")
-        else:
-            messages.error(request, "Invalid username or password.")
-
-    return render(request, "Adminpanel/admin_login.html")
-
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def admin_dashboard(request):
     pending_recipes = Recipe.objects.filter(visibility=Recipe.PUBLIC, status='pending').order_by('-created_at')
 
@@ -40,7 +24,7 @@ def admin_dashboard(request):
     }
     return render(request, 'Adminpanel/admin_dashboard.html', context)
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def manage_users(request):
     user_search = request.GET.get('user_search', '').strip()
     
@@ -54,7 +38,7 @@ def manage_users(request):
     }
     return render(request, 'Adminpanel/admin_users.html', context)
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def manage_recipes(request):
     recipe_search = request.GET.get('recipe_search', '').strip()
 
@@ -71,7 +55,7 @@ def manage_recipes(request):
     }
     return render(request, 'Adminpanel/admin_recipes.html', context)
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def approve_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == "POST":
@@ -85,7 +69,7 @@ def approve_recipe(request, recipe_id):
         messages.success(request, f'Recipe "{recipe.title}" has been approved.')
     return redirect('admin_dashboard')
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def reject_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == "POST":
@@ -101,7 +85,7 @@ def reject_recipe(request, recipe_id):
     messages.success(request, f'Recipe "{recipe.title}" has been rejected.')
     return redirect('admin_dashboard')
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def delete_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == "POST":
@@ -115,7 +99,7 @@ def delete_recipe(request, recipe_id):
         messages.success(request, f'Recipe deleted successfully.')
     return redirect('manage_recipes')
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     # Ensure superuser doesn't easily delete themselves immediately, but okay let's allow admins
@@ -125,9 +109,9 @@ def delete_user(request, user_id):
         else:
             user.delete()
             messages.success(request, f'User {user.username} deleted successfully.')
-    return redirect('admin_dashboard')
+    return redirect('manage_users')
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def add_tag(request):
     if request.method == "POST":
         tag_name = request.POST.get('tag_name', '').strip()
@@ -146,7 +130,7 @@ def add_tag(request):
                 return JsonResponse({'success': False, 'message': 'Tag name cannot be empty.'})
     return redirect('manage_recipes')
 
-@user_passes_test(is_admin, login_url='/adminpanel/login/')
+@user_passes_test(is_admin, login_url='login')
 def delete_tag(request, tag_id):
     tag = get_object_or_404(Tag, id=tag_id)
     if request.method == "POST":

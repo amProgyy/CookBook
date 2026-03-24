@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.urls import reverse
+from django.contrib import messages
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 from django.contrib.auth.decorators import login_required
 from .models import Recipe, Ingredient, Tag, Step
 from User.models import Favorite
@@ -13,8 +17,6 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 SPOONACULAR_API_KEY = os.getenv("SPOONACULAR_API_KEY")
-print(f"DEBUG: Loaded API Key: {SPOONACULAR_API_KEY}")
-
 
 def home_feed(request):
     recipes = Recipe.objects.filter(visibility=Recipe.PUBLIC, status='approved').order_by('-created_at')
@@ -63,8 +65,6 @@ def home_feed(request):
         'ingredient_search': ', '.join(ingredients),
         'all_tags': all_tags,
     }
-    for recipe in recipes:
-        print(recipe)
     return render(request, 'home_feed.html', context)
 
 
@@ -230,19 +230,21 @@ def recipe_detail(request, recipe_id):
 
 @login_required
 def delete_ajax(request, recipe_id):
-    if request.method == "POST" and request.headers.get("x-requested-with") == "XMLHttpRequest":
+    if request.method == "POST":
         recipe = get_object_or_404(Recipe, id=recipe_id, author=request.user)
+        recipe_title = recipe.title
         recipe.delete()
+        messages.success(request, f'Recipe "{recipe_title}" has been deleted.')
 
         return JsonResponse({
             "status": "success",
             "message" : "deleted recipe",
-            "redirect_url": "/user/my_cookbook/"
+            "redirect_url": reverse('my_cookbooks')
         })
     return JsonResponse({
-        "status" : "not success",
-        "message" : "failed to delte"
-    })
+        "status" : "error",
+        "message" : "Invalid request method"
+    }, status=405)
 
 @login_required
 def edit_recipe(request, recipe_id):
@@ -271,10 +273,8 @@ def edit_recipe(request, recipe_id):
             # Workflow logic for approvals based on visibility
             if edited_recipe.visibility == Recipe.PRIVATE:
                 edited_recipe.status = 'approved' # Private recipes don't need approval
-            elif old_visibility == Recipe.PRIVATE and edited_recipe.visibility == Recipe.PUBLIC:
-                edited_recipe.status = 'pending' # Switched to public, needs admin review
-            elif edited_recipe.status == 'rejected' and edited_recipe.visibility == Recipe.PUBLIC:
-                edited_recipe.status = 'pending' # Re-submitting a rejected recipe for review
+            elif edited_recipe.visibility == Recipe.PUBLIC:
+                edited_recipe.status = 'pending' # Any edit to a public recipe requires admin review
                 
             edited_recipe.save()
             
@@ -301,9 +301,7 @@ def edit_recipe(request, recipe_id):
             step_formset.save()
             return redirect('recipe_detail', recipe_id=recipe.id)
         else:
-            print("Recipe Form Errors:", recipe_form.errors)
-            print("Ingredient Formset Errors:", ingredient_formset.errors)
-            print("Step Formset Errors:", step_formset.errors)
+            pass
     else:
         recipe_form = RecipeForm(instance=recipe)
         ingredient_formset = IngredientFormSet(instance=recipe, prefix='ingredients')
@@ -341,10 +339,8 @@ def nutrition_analysis(request, recipe_id):
     if SPOONACULAR_API_KEY and SPOONACULAR_API_KEY != "your_actual_key_here":
         try:
             response = requests.get(url, timeout=5)
-            print(f"DEBUG: Nutrition Response Status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
-                print(f"DEBUG: Nutrition Data: {data}")
                 # Spoonacular guessNutrition returns data in a slightly different format
                 # We normalize it for our front end
                 nutrition_data = {
@@ -374,13 +370,34 @@ def ingredient_substitute(request, ingredient_name):
     if SPOONACULAR_API_KEY and SPOONACULAR_API_KEY != "your_actual_key_here":
         try:
             response = requests.get(url, timeout=5)
-            print(f"DEBUG: Substitute Response Status: {response.status_code}")
             if response.status_code == 200:
                 substitutes = response.json()
-                print(f"DEBUG: Substitute Data: {substitutes}")
             else:
                 substitutes["message"] = f"API Error: {response.status_code}"
         except Exception as e:
             substitutes["message"] = f"Connection Error: {str(e)}"
         
     return JsonResponse(substitutes)
+
+
+def download_recipe_pdf(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    template_path = 'recipe_pdf.html'
+    context = {
+        'recipe': recipe,
+        'ingredients': recipe.ingredients.all(),
+        'steps': recipe.steps.all(),
+    }
+    
+    response = HttpResponse(content_type='application/pdf')
+    # Safe filename formatting
+    safe_filename = "".join([c for c in recipe.title if c.isalpha() or c.isdigit() or c==' ']).rstrip()
+    response['Content-Disposition'] = f'attachment; filename="{safe_filename.replace(" ", "_")}.pdf"'
+    
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

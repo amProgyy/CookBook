@@ -12,10 +12,11 @@ class RecipeForm(forms.ModelForm):
             'description',
             'chefs_note',
             'number_of_servings',
+            'servings_unit',
             'visibility',
             
         ]
-        exclude = ['tags'] 
+        exclude = ['tags']
         widgets = {
         'title': forms.TextInput(attrs={
             'placeholder': 'Recipe Title',
@@ -36,6 +37,10 @@ class RecipeForm(forms.ModelForm):
         'number_of_servings': forms.NumberInput(attrs={
                 'min': 1,
                 'class': 'servings-input'
+            }),
+        'servings_unit': forms.TextInput(attrs={
+                'class': 'servings-unit-input',
+                'placeholder': 'persons'
             }),
         'image': forms.FileInput(attrs={
                 'class': 'image-input',

@@ -20,13 +20,13 @@ body {
 }
 
 body.sidebar-expanded .recipe-page {
-    padding: 40px 150px;
+    padding: 40px 200px;
 }
 
 .recipe-flex {
     display: flex;
     padding: 20px;
-    align-items: flex-start;
+    align-items: stretch;
 }
 
 /* =========================
@@ -98,6 +98,18 @@ body.sidebar-expanded .recipe-page {
 .recipe-right {
     flex: 1;
     padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.reset-scale-btn-container {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    height: 38px;
+    /* rough matching height to serving input container */
 }
 
 /* =========================
@@ -208,6 +220,7 @@ label:hover::after {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .serving-input {

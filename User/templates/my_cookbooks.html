@@ -139,6 +139,7 @@
     {% endif %}
 </div>
 
+{% csrf_token %}
 <script>
     function switchTab(tabId) {
         // Hide all tabs
@@ -176,10 +177,10 @@
 
         if (!confirmed) return;
 
-        fetch("/recipe/delete/" + recipeId + "/", {
+        fetch("/delete/" + recipeId + "/", {
             method: "POST",
             headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
                 "X-Requested-With": "XMLHttpRequest"
             }
         })
@@ -210,7 +211,7 @@
         fetch("/user/toggle-favorite/" + recipeId + "/", {
             method: "POST",
             headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
                 "X-Requested-With": "XMLHttpRequest"
             }
         })

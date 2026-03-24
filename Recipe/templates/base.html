@@ -148,7 +148,8 @@
 
         <!-- User Actions (Bottom) -->
         <div class="sidebar-links sidebar-bottom">
-            <a href="{% url 'admin_login' %}"
+            {% if request.user.is_authenticated and request.user.is_staff %}
+            <a href="{% url 'admin_dashboard' %}"
                 class="sidebar-link {% if request.resolver_match.url_name == 'admin_login' or request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
                 data-tooltip="Admin Portal">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -157,6 +158,7 @@
                 </svg>
                 <span class="link-text">Admin Portal</span>
             </a>
+            {% endif %}
 
             {% if user.is_authenticated %}
 
@@ -213,13 +215,26 @@
             <div class="header-right">
                 {% block header_right %}
                 {% if user.is_authenticated %}
-                <span class="header-welcome">Hello, <a href="{% url 'user_profile' user.username %}" style="color: #3E2F28;"  class="feed-author">{{ user.username }}</a></span>
+                <span class="header-welcome">Hello, <a href="{% url 'user_profile' user.username %}"
+                        style="color: #3E2F28;" class="feed-author">{{ user.username }}</a></span>
                 {% endif %}
                 {% endblock %}
             </div>
         </header>
 
         <div class="content-wrapper">
+            {% block global_messages %}
+            {% if messages %}
+            <div class="messages-container" style="padding: 10px 24px;">
+                {% for message in messages %}
+                <div class="alert {{ message.tags }}"
+                    style="background: #E8E4DD; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-weight: 600; color: #3E2F28; border-left: 4px solid #C88468;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endblock global_messages %}
             {% block content %}{% endblock %}
         </div>
     </main>

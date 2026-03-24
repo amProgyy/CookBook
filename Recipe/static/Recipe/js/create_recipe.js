@@ -490,11 +490,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 reader.onload = function (e) {
                     preview.src = e.target.result;
                     uploadBox.classList.add("has-image");
+                    const polaroidText = uploadBox.querySelector(".polaroid-text");
+                    if (polaroidText) polaroidText.textContent = "Delicius..!";
                 };
 
                 reader.readAsDataURL(file);
             } else {
                 uploadBox.classList.remove("has-image");
+                const polaroidText = uploadBox.querySelector(".polaroid-text");
+                if (polaroidText) polaroidText.textContent = "No photo yet...";
             }
         });
     }

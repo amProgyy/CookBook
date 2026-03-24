@@ -51,8 +51,12 @@ def user_login(request):
                 messages.error(request, "Incorrect password")
             else:
                 login(request, user)
+                if user.is_staff or user.is_superuser:
+                    return redirect("admin_dashboard")
                 return redirect("home_feed")
     else:
+        if request.user.is_staff or request.user.is_superuser:
+            return redirect('admin_dashboard')
         return redirect('home_feed')
         
     return render(request, "login.html")
@@ -61,7 +65,7 @@ def user_login(request):
 @login_required
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('home_feed')
             
 
 @login_required
@@ -106,11 +110,9 @@ def favorite_recipes(request):
         "recipes": recipes,
         "is_favorites_page": True
     }
-    for recipe in recipes:
-        print(recipe.author.username)
     return render(request, "my_cookbooks.html", context)
 
-@login_required
+
 def user_profile(request, username):
     profile_user = get_object_or_404(User, username=username)
     

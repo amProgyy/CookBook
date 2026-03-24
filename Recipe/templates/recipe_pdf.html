@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ recipe.title }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #3E2F28;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #C88468;
+            font-size: 28pt;
+            margin-bottom: 5px;
+        }
+
+        .author {
+            color: #666;
+            font-size: 14pt;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .description {
+            font-size: 12pt;
+            margin-bottom: 30px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #8DA399;
+        }
+
+        h2 {
+            color: #0f8a8a;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            font-size: 18pt;
+        }
+
+        .meta {
+            font-size: 12pt;
+            margin-bottom: 20px;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 12pt;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>{{ recipe.title }}</h1>
+    <div class="author">By @{{ recipe.author.username }}</div>
+
+    <div class="meta">
+        <strong>Servings:</strong> {{ recipe.number_of_servings }} {{ recipe.servings_unit|default:"persons" }}<br>
+        <strong>Created:</strong> {{ recipe.created_at|date:"M d, Y" }}
+    </div>
+
+    {% if recipe.description %}
+    <div class="description">
+        {{ recipe.description }}
+    </div>
+    {% endif %}
+
+    <h2>Ingredients</h2>
+    <ul>
+        {% for ing in ingredients %}
+        <li><strong>{{ ing.quantity|floatformat:1 }} {% if ing.unit %}{{ ing.unit }}{% endif %}</strong> {{ ing.name }}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Steps</h2>
+    <ol>
+        {% for step in steps %}
+        <li>{{ step.instruction }}</li>
+        {% endfor %}
+    </ol>
+</body>
+
+</html>

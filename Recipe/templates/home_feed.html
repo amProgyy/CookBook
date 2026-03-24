@@ -131,7 +131,7 @@
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                         </svg>
-                        {{ recipe.number_of_servings }} Servings
+                        {{ recipe.number_of_servings }} {{ recipe.servings_unit|default:"persons" }}
                     </span>
                 </div>
 
@@ -164,6 +164,7 @@
 {{ all_tags|json_script:"all-tags-data" }}
 <script src="{% static 'Recipe/js/search_autocomplete.js' %}"></script>
 
+{% csrf_token %}
 <!-- JavaScript for toggling favorite hearts via AJAX -->
 <script>
     async function toggleFavorite(recipeId, btnElement) {
@@ -182,7 +183,7 @@
         fetch("/user/toggle-favorite/" + recipeId + "/", {
             method: "POST",
             headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
                 "X-Requested-With": "XMLHttpRequest"
             }
         })

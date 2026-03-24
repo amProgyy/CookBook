@@ -235,16 +235,7 @@ body.sidebar-expanded .recipe-page {
     z-index: 1001;
 }
 
-.save-btn:hover {
-    background: #7D0E2D;
-    transform: translateY(-2px);
-}
 
-.save-btn:hover {
-    background: #B36D51;
-    transform: translate(3px, 3px);
-    box-shadow: 0px 0px 0px #3E2F28;
-}
 
 
 /* =========================
@@ -339,8 +330,7 @@ body.sidebar-expanded .recipe-page {
     /* Hide #D9D2C8 during load */
 }
 
-.upload-box.has-image .upload-content,
-.upload-box.has-image .polaroid-text {
+.upload-box.has-image .upload-content {
     display: none;
 }
 
@@ -457,6 +447,19 @@ h3 {
     text-align: center;
     max-width: 70px;
     min-width: 20px;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+.servings .servings-unit-input {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #ddd;
+    background: transparent;
+    text-align: center;
+    max-width: 100px;
+    margin-left: 5px;
 }
 
 
