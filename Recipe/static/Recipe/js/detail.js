@@ -112,6 +112,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const baseQty = parseFloat(item.dataset.base);
 
+        const minusBtn = item.querySelector(".minus-btn");
+        const plusBtn = item.querySelector(".plus-btn");
+
+        if (minusBtn) {
+            minusBtn.addEventListener("click", () => {
+                let currentVal = parseFloat(input.value) || 0;
+                let step = parseFloat(input.step) || 0.5;
+                let newVal = currentVal - step;
+                if (newVal >= 0) {
+                    input.value = newVal;
+                    input.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+
+        if (plusBtn) {
+            plusBtn.addEventListener("click", () => {
+                let currentVal = parseFloat(input.value) || 0;
+                let step = parseFloat(input.step) || 0.5;
+                input.value = currentVal + step;
+                input.dispatchEvent(new Event('input'));
+            });
+        }
+
         input.addEventListener("input", function () {
             if (isUpdating) return;
             isUpdating = true;

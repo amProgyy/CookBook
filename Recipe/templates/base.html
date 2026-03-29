@@ -240,7 +240,7 @@
     </main>
 
     <!-- Savory Confirm Modal -->
-    <div id="savoryModalOverlay" class="savory-modal-overlay">
+    <div id="savoryModalOverlay" class="savory-modal-overlay" style="z-index: 10000;">
         <div class="savory-modal-box">
             <button id="savoryModalClose" class="savory-modal-close" aria-label="Close">&times;</button>
             <h3 id="savoryModalTitle" class="savory-modal-title">Are you sure?</h3>
@@ -248,6 +248,20 @@
             <div class="savory-modal-actions">
                 <button id="savoryModalCancel" class="savory-btn savory-btn-cancel">Cancel</button>
                 <button id="savoryModalConfirm" class="savory-btn savory-btn-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Import Modal -->
+    <div id="globalImportOverlay" class="savory-modal-overlay">
+        <div class="savory-modal-box" style="max-width: 600px; padding: 30px; text-align: left;">
+            <button id="globalImportClose" class="savory-modal-close" aria-label="Close">&times;</button>
+            <h3 class="savory-modal-title" style="margin-top:0; font-family: 'Playfair Display', serif; color: #3E2F28;">Paste your recipe</h3>
+            <p style="color:#666; font-size:14px; margin-bottom:15px; font-family: 'Quicksand', sans-serif;">Paste everything here! Make sure you have clear labels like "Ingredients" and "Instructions".</p>
+            <textarea id="globalImportTextarea" rows="12" placeholder="Title on first line...&#10;&#10;Ingredients...&#10;1 cup flour...&#10;&#10;Instructions...&#10;1. Mix flour..." style="width: 100%; border: 2px solid #E0DCD9; border-radius: 12px; padding: 15px; font-family: 'Quicksand', sans-serif; font-size: 16px; color: #3E2F28; resize: vertical; outline: none; box-sizing: border-box;"></textarea>
+            <div style="text-align: right; margin-top: 20px; display: flex; justify-content: flex-end; gap: 15px;">
+                <button id="globalImportBack" class="savory-btn savory-btn-cancel">Back</button>
+                <button id="globalImportProcess" class="savory-btn savory-btn-confirm" style="background:#8DA399; color: white;">Process &amp; Load</button>
             </div>
         </div>
     </div>
@@ -332,18 +346,86 @@
         };
 
         /**
-         * Confirm Write Navigation
+         * Choose Recipe Mode Navigation
          */
-        window.confirmWrite = async function (event, url) {
+        window.confirmWrite = function (event, url) {
             event.preventDefault();
-            const confirmed = await savoryConfirm("Are you sure you want to write a new recipe?", {
-                title: "Confirm",
-                confirmText: "Yes, Write",
-                cancelText: "Cancel"
-            });
-            if (confirmed) {
-                window.location.href = url;
-            }
+            const overlay = document.getElementById('savoryModalOverlay');
+            const titleEl = document.getElementById('savoryModalTitle');
+            const messageEl = document.getElementById('savoryModalMessage');
+            const confirmBtn = document.getElementById('savoryModalConfirm');
+            const cancelBtn = document.getElementById('savoryModalCancel');
+            const closeBtn = document.getElementById('savoryModalClose');
+
+            titleEl.textContent = "How would you like to start?";
+            messageEl.textContent = "You can write a recipe from scratch or import one by pasting its text.";
+            confirmBtn.textContent = "Import Recipe";
+            cancelBtn.textContent = "Write Your Own";
+
+            overlay.classList.add('show');
+
+            const handleImport = () => { 
+                cleanup(); 
+                
+                const importOverlay = document.getElementById('globalImportOverlay');
+                const importClose = document.getElementById('globalImportClose');
+                const importProcess = document.getElementById('globalImportProcess');
+                const importBody = document.getElementById('globalImportTextarea');
+                const importBack = document.getElementById('globalImportBack');
+                
+                importOverlay.classList.add('show');
+                if (importBody) importBody.value = '';
+                
+                const closeImport = () => {
+                    importOverlay.classList.remove('show');
+                };
+
+                if (importClose) importClose.onclick = closeImport;
+                if (importBack) importBack.onclick = () => { closeImport(); window.confirmWrite(event, url); };
+                importOverlay.onclick = (e) => {
+                    if (e.target === importOverlay) closeImport();
+                };
+
+                if (importProcess) {
+                    importProcess.onclick = () => {
+                        const text = importBody ? importBody.value.trim() : "";
+                        if (!text) {
+                            const cancelBtn = document.getElementById('savoryModalCancel');
+                            const origDisplay = cancelBtn.style.display;
+                            cancelBtn.style.display = 'none';
+                            
+                            savoryConfirm("Looks like you forgot to paste the recipe! Please add some text to continue.", {
+                                title: "Empty Recipe",
+                                confirmText: "Understood"
+                            }).then(() => {
+                                cancelBtn.style.display = origDisplay;
+                            });
+                            return;
+                        }
+                        sessionStorage.setItem('pendingImportText', text);
+                        closeImport();
+                        window.location.href = url + "?mode=import_process";
+                    };
+                }
+            };
+            const handleWrite = () => { cleanup(); window.location.href = url + "?mode=write"; };
+            const handleClose = () => { cleanup(); };
+
+            const cleanup = () => {
+                confirmBtn.removeEventListener('click', handleImport);
+                cancelBtn.removeEventListener('click', handleWrite);
+                closeBtn.removeEventListener('click', handleClose);
+                overlay.onclick = null;
+                overlay.classList.remove('show');
+            };
+
+            confirmBtn.addEventListener('click', handleImport);
+            cancelBtn.addEventListener('click', handleWrite);
+            closeBtn.addEventListener('click', handleClose);
+
+            overlay.onclick = (e) => {
+                if (e.target === overlay) handleClose();
+            };
         };
 
         /**

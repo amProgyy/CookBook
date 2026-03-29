@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}CookWise{% endblock %}
+{% block title %}{{ recipe.title|title }} | CookWise{% endblock %}
 {% block header_right %}
 <div style="display: flex; gap: 10px; align-items: center;">
   <a href="{% url 'download_recipe_pdf' recipe_id=recipe.id %}" class="share-btn"
@@ -182,8 +182,9 @@
           </p>
         </div>
         <div class="ingredient-measure-col">
-          <input type="number" class="ingredient-input quantity-input" value="{{ ing.quantity|floatformat:1 }}" min="0"
-            step="0.5">
+          <button type="button" class="qty-btn minus-btn" aria-label="Decrease quantity">−</button>
+          <input type="number" class="ingredient-input quantity-input" value="{{ ing.quantity|floatformat:1 }}" min="0" step="0.5">
+          <button type="button" class="qty-btn plus-btn" aria-label="Increase quantity">+</button>
           <span class="ingredient-unit-badge">{% if ing.unit %}{{ ing.unit }}{% else %}unit{% endif %}</span>
           <button onclick="getSubstitute('{{ ing.name|escapejs }}', this)" class="substitute-btn"
             title="Find Substitute">
@@ -196,7 +197,7 @@
         </div>
         <!-- Substitute Results Container -->
         <div class="substitute-results"
-          style="display: none; width: 100%; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #E0DCD9; font-size: 15px; color: #555; font-family: 'Quicksand', sans-serif;">
+          style="display: none; width: 100%; margin-top: 15px; padding-top: 15px; border-top: 1px solid #E0DCD9; font-size: 15px; color: #555; font-family: 'Quicksand', sans-serif;">
         </div>
       </li>
       {% endfor %}

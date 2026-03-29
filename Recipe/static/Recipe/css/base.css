@@ -54,7 +54,7 @@ body {
     margin-bottom: 30px;
     height: 90px;
     width: 100%;
-    border-bottom: 1px dashed rgba(224, 220, 217, 0.7);
+    border-bottom: 1px solid rgba(224, 220, 217, 0.7);
     box-sizing: border-box;
     display: flex;
     flex-direction: row;
@@ -436,7 +436,7 @@ body.sidebar-expanded .header-title {
     background: #F4F1EA;
     background-image: radial-gradient(rgba(62, 47, 40, 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
-    border: 2px dashed #C88468;
+    border: 2px solid #C88468;
     padding: 40px;
     border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
     max-width: 450px;
@@ -498,7 +498,7 @@ body.sidebar-expanded .header-title {
 
 .savory-btn {
     padding: 12px 28px;
-    border-radius: 20px 5px 20px 5px / 5px 20px 5px 20px;
+    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
     font-family: 'Quicksand', sans-serif;
     font-weight: 700;
     font-size: 15px;

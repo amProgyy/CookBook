@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (titleMissing && servingsMissing) {
-            showMainWarning("Write the Recipe title and enter the number of person.");
+            showMainWarning("Please write your own recipe or import one.");
         } else if (titleMissing) {
             showMainWarning("Write the Recipe title.");
         } else {
@@ -545,8 +545,143 @@ document.addEventListener("change", function (e) {
 $(document).ready(function () {
     $('.tag-select').select2({
         placeholder: "Select or add tags",
-        tags: true,              // allows new tags
-        tokenSeparators: [','],  // press comma to create tag
+        tags: true,
+        tokenSeparators: [','],
         allowClear: true
     });
+});
+
+// =========================
+// IMPORT RECIPE PARSER
+// =========================
+document.addEventListener("DOMContentLoaded", function () {
+    const pendingImportText = sessionStorage.getItem('pendingImportText');
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (pendingImportText && urlParams.get('mode') === 'import_process') {
+        sessionStorage.removeItem('pendingImportText');
+        const text = pendingImportText.trim();
+        if(!text) return;
+
+        function parseFraction(str) {
+            if (!str) return 1;
+            str = str.replace('½', '0.5').replace('¼', '0.25').replace('¾', '0.75').replace('⅓', '0.33').replace('⅔', '0.67');
+            let parts = str.trim().split(/\s+/);
+            let total = 0;
+            for (let p of parts) {
+                if (p.includes('/')) {
+                    let fp = p.split('/');
+                    if (fp.length === 2 && parseFloat(fp[1])) {
+                        total += parseFloat(fp[0]) / parseFloat(fp[1]);
+                    }
+                } else {
+                    total += parseFloat(p) || 0;
+                }
+            }
+            return total || 1;
+        }
+
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+        let title = lines[0];
+        let ingredients = [];
+        let steps = [];
+
+        let mode = 'general';
+        for (let i = 1; i < lines.length; i++) {
+            let lower = lines[i].toLowerCase();
+            if (lower === 'ingredients' || lower === 'ingredients:' || lower.startsWith('ingredient')) {
+                mode = 'ingredients';
+                continue;
+            }
+            if (lower === 'steps' || lower === 'steps:' || lower === 'instructions' || lower === 'instructions:' || lower === 'directions' || lower === 'directions:') {
+                mode = 'steps';
+                continue;
+            }
+
+            if (mode === 'ingredients') {
+                if (lines[i].length > 1) ingredients.push(lines[i]);
+            } else if (mode === 'steps') {
+                if (lines[i].length > 1) steps.push(lines[i]);
+            }
+        }
+
+        // Fill Title
+        const titleInput = document.getElementById("id_title");
+        if (titleInput && title) {
+            titleInput.value = title.substring(0, 200);
+        }
+
+        // Fill Ingredients
+        if (ingredients.length > 0) {
+            const addIngBtn = document.getElementById("add-ingredient");
+            for (let i = 0; i < ingredients.length; i++) {
+                const allForms = document.querySelectorAll("#ingredient-container .ingredient-form:not(.deleted-ingredient)");
+                if (i >= allForms.length && addIngBtn) {
+                    addIngBtn.click();
+                }
+                const currentForms = document.querySelectorAll("#ingredient-container .ingredient-form:not(.deleted-ingredient)");
+                if (currentForms[i]) {
+                    const row = currentForms[i];
+                    const nameInput = row.querySelector(".ingredient-name");
+                    const qtyInput = row.querySelector(".ingredient-quantity");
+                    const unitInput = row.querySelector(".ingredient-unit");
+
+                    if (nameInput) {
+                        const str = ingredients[i];
+                        const match = str.match(/^([\d\.\/\s½¼¾⅓⅔]+)?\s*([a-zA-Z]+)?\s+(.*)$/);
+                        if (match && match[1] && match[3]) {
+                            qtyInput.value = parseFraction(match[1]);
+
+                            let u = match[2] ? match[2].toLowerCase() : "";
+                            let unitMap = {
+                                'cup': 'cup', 'cups': 'cup',
+                                'tbsp': 'tbsp', 'tablespoon': 'tbsp', 'tablespoons': 'tbsp',
+                                'tsp': 'tsp', 'teaspoon': 'tsp', 'teaspoons': 'tsp',
+                                'g': 'g', 'gram': 'g', 'grams': 'g',
+                                'kg': 'kg', 'kilogram': 'kg', 'kilograms': 'kg',
+                                'ml': 'ml', 'milliliter': 'ml', 'milliliters': 'ml',
+                                'l': 'l', 'liter': 'l', 'liters': 'l',
+                                'pcs': 'pcs', 'piece': 'pcs', 'pieces': 'pcs', 'clove': 'pcs', 'cloves': 'pcs', 'slice': 'pcs', 'slices': 'pcs'
+                            };
+
+                            if (unitMap[u]) {
+                                unitInput.value = unitMap[u];
+                                nameInput.value = match[3];
+                            } else {
+                                unitInput.value = "";
+                                nameInput.value = (u + " " + match[3]).trim();
+                            }
+                        } else {
+                            qtyInput.value = 1;
+                            unitInput.value = "";
+                            nameInput.value = str;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Fill Steps
+        if (steps.length > 0) {
+            const addStepBtn = document.getElementById("add-step");
+            for (let i = 0; i < steps.length; i++) {
+                const allForms = document.querySelectorAll("#step-container .step-form:not(.deleted-step)");
+                if (i >= allForms.length && addStepBtn) {
+                    addStepBtn.click();
+                }
+                const currentForms = document.querySelectorAll("#step-container .step-form:not(.deleted-step)");
+                if (currentForms[i]) {
+                    const row = currentForms[i];
+                    const textInput = row.querySelector("textarea.step-instruction");
+                    if (textInput) {
+                        textInput.value = steps[i].replace(/^\d+\.\s*/, '');
+                        textInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+            }
+        }
+        
+        // Remove query param from the URL to avoid re-triggering on refresh
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 });

@@ -60,9 +60,9 @@ body.sidebar-expanded .recipe-page {
 ========================= */
 .recipe-title input {
     text-transform: capitalize;
-    font-family: 'Caveat', cursive;
-    /* Handwritten look */
-    font-size: 72px;
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 800;
     border: none;
     outline: none;
     background: transparent;
@@ -84,7 +84,7 @@ body.sidebar-expanded .recipe-page {
 .section-card {
     background: white;
     /* Scrapbook organic shape */
-    border-radius: 6px 20px 8px 15px / 15px 5px 22px 5px;
+    border-radius: 12px;
     border: 1px solid #E0DCD9;
     padding: 30px 20px;
     /* Hard offset shadow */
@@ -129,14 +129,14 @@ body.sidebar-expanded .recipe-page {
 .step-form input {
     border: none;
     outline: none;
-    border-bottom: 1px dashed #C88468;
+    border-bottom: 1px solid #C88468;
     background: transparent;
     padding: 8px 4px;
-    font-family: 'Caveat', cursive;
-    /* Handwritten entries */
+    font-family: 'Quicksand', sans-serif;
     color: #3E2F28;
-    font-size: 24px;
+    font-size: 16px;
     font-style: normal;
+    font-weight: 500;
 }
 
 .ingredient-name {
@@ -168,8 +168,9 @@ body.sidebar-expanded .recipe-page {
     outline: none;
     flex: 1;
     min-height: 80px;
-    font-size: 24px;
-    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 500;
     color: #3E2F28;
     line-height: 28px;
     resize: none;
@@ -356,8 +357,8 @@ body.sidebar-expanded .recipe-page {
 
 .step-upload-label {
     display: block;
-    border: 2px dashed #E0DCD9;
-    border-radius: 25px 5px 25px 5px / 5px 25px 5px 25px;
+    border: 2px solid #E0DCD9;
+    border-radius: 12px;
     padding: 15px;
     text-align: center;
     cursor: pointer;
@@ -640,6 +641,13 @@ tag-select:focus {
    Visibility
 ========================= */
 
+.card-small-card label {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: #3E2F28;
+    margin-right: 15px;
+}
+
 .card-small-card select {
     border: none;
     outline: none;
@@ -647,7 +655,8 @@ tag-select:focus {
     background: transparent;
     padding: 6px;
     font-size: 15px;
-
+    font-family: 'Quicksand', sans-serif;
+    color: #3E2F28;
 }
 
 /* =========================
@@ -663,4 +672,60 @@ tag-select:focus {
 
 servings {
     flex: 1;
+}
+
+/* =========================
+   Mode Toggle (Write/Import)
+========================= */
+.mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.mode-btn {
+    background: transparent;
+    border: 2px solid #C88468;
+    color: #C88468;
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-btn.active, .mode-btn:hover {
+    background: #C88468;
+    color: white;
+}
+
+.import-section {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E0DCD9;
+    padding: 30px;
+    box-shadow: 4px 5px 0px rgba(62, 47, 40, 0.15);
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+.import-section textarea {
+    width: 100%;
+    border: 2px solid #E0DCD9;
+    border-radius: 12px;
+    padding: 15px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #3E2F28;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.import-section textarea:focus {
+    border-color: #C88468;
 }

@@ -14,6 +14,7 @@
 
 {% block content %}
 <div class="recipe-page">
+
     <form method="post" enctype="multipart/form-data" id="recipeForm">
         {% csrf_token %}
         <div class="recipe-flex">
@@ -48,6 +49,7 @@
                 <div class="new-section">
                     <!-- Visibility -->
                     <div class="card-small-card">
+                        <label>Visibility: </label>
                         {{ form.visibility }}
                     </div>
                     <!-- Servings -->

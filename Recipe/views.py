@@ -232,9 +232,7 @@ def recipe_detail(request, recipe_id):
 def delete_ajax(request, recipe_id):
     if request.method == "POST":
         recipe = get_object_or_404(Recipe, id=recipe_id, author=request.user)
-        recipe_title = recipe.title
         recipe.delete()
-        messages.success(request, f'Recipe "{recipe_title}" has been deleted.')
 
         return JsonResponse({
             "status": "success",
