@@ -53,25 +53,7 @@ class Recipe(models.Model):
     rejection_reason = models.TextField(blank=True)
 
 
-class IngredientGroup(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='ingredient_groups'
-    )
-    name = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-        help_text="e.g. For the Sauce, For the Garnish"
-    )
-    order = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        ordering = ['order', 'id']
-
-    def __str__(self):
-        return self.name or f"Group in {self.recipe.title}"
 
 
 class Ingredient(models.Model):
@@ -93,19 +75,12 @@ class Ingredient(models.Model):
         on_delete=models.CASCADE,
         related_name='ingredients'
     )
-    group = models.ForeignKey(
-        IngredientGroup,
-        on_delete=models.CASCADE,
-        related_name='ingredients',
-        null=True,
-        blank=True
-    )
+
     name = models.CharField(max_length=100)
     quantity = models.DecimalField(max_digits=7, decimal_places=2)
     unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
 
     class Meta:
-        # unique_together = ('recipe', 'name')
         ordering = ['id']
 
 

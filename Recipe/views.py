@@ -8,13 +8,12 @@ from django.contrib.auth.decorators import login_required
 from .models import Recipe, Ingredient, Tag, Step
 from User.models import Favorite
 from .forms import RecipeForm, IngredientFormSet, StepFormSet
-from decimal import Decimal, ROUND_HALF_UP
 from django.db.models import Count
 import os
 import requests
+import re
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
+from django.core.cache import cache
 load_dotenv()
 SPOONACULAR_API_KEY = os.getenv("SPOONACULAR_API_KEY")
 
@@ -318,12 +317,20 @@ def edit_recipe(request, recipe_id):
 
 })
 
-@login_required
+
 def nutrition_analysis(request, recipe_id):
+    cache_key = f"nutrition_data_{recipe_id}"
+    cached_nutrition = cache.get(cache_key)
+    if cached_nutrition:
+        return JsonResponse(cached_nutrition)
+
     recipe = get_object_or_404(Recipe, id=recipe_id)
     
-    # URL for guessNutrition
-    url = f"https://api.spoonacular.com/recipes/guessNutrition?title={recipe.title}&apiKey={SPOONACULAR_API_KEY}"
+    url = "https://api.spoonacular.com/recipes/guessNutrition"
+    params = {
+        "title": recipe.title,
+        "apiKey": SPOONACULAR_API_KEY
+    }
     
     # Mock data fallback
     nutrition_data = {
@@ -336,11 +343,9 @@ def nutrition_analysis(request, recipe_id):
     
     if SPOONACULAR_API_KEY and SPOONACULAR_API_KEY != "your_actual_key_here":
         try:
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, params=params, timeout=5)
             if response.status_code == 200:
                 data = response.json()
-                # Spoonacular guessNutrition returns data in a slightly different format
-                # We normalize it for our front end
                 nutrition_data = {
                     "calories": data.get("calories", {"value": 0, "unit": "kcal"}),
                     "fat": data.get("fat", {"value": 0, "unit": "g"}),
@@ -348,35 +353,167 @@ def nutrition_analysis(request, recipe_id):
                     "carbs": data.get("carbs", {"value": 0, "unit": "g"}),
                     "status": "Real-time API Data"
                 }
+            elif response.status_code in [402, 429]:
+                nutrition_data["status"] = "API limit exceeded. Please try again later."
             else:
                 nutrition_data["status"] = f"API Error: {response.status_code}"
-        except Exception as e:
+                
+            if not response.text.strip():
+                nutrition_data["status"] = "Empty response from API."
+                
+        except requests.exceptions.RequestException as e:
             nutrition_data["status"] = f"Connection Error: {str(e)}"
+        except Exception as e:
+            nutrition_data["status"] = f"Unexpected Error: {str(e)}"
+
+    # Cache for 48 hours to save credits
+    if "Error" not in nutrition_data["status"] and "exceeded" not in nutrition_data["status"]:
+        cache.set(cache_key, nutrition_data, 60*60*48)
 
     return JsonResponse(nutrition_data)
 
-@login_required
+
 def ingredient_substitute(request, ingredient_name):
-    url = f"https://api.spoonacular.com/food/ingredients/substitutes?ingredientName={ingredient_name}&apiKey={SPOONACULAR_API_KEY}"
+    # Clean ingredient name
+    cleaned_name = re.sub(r'\(.*?\)', '', ingredient_name)
+    words_to_remove = ['chopped', 'sliced', 'softened', 'diced', 'minced', 'melted', 'fresh', 'dried']
+    if cleaned_name:
+        pattern = re.compile(r'\b(' + '|'.join(words_to_remove) + r')\b', re.IGNORECASE)
+        cleaned_name = pattern.sub('', cleaned_name)
+        
+    cleaned_name = ' '.join(cleaned_name.split())
+    if not cleaned_name:
+        cleaned_name = ingredient_name
+        
+    safe_name = "".join([c if c.isalnum() else "_" for c in cleaned_name]).lower()
+    cache_key = f"substitute_data_{safe_name}"
+    cached_sub = cache.get(cache_key)
+    if cached_sub:
+        return JsonResponse(cached_sub)
+
+    url = "https://api.spoonacular.com/food/ingredients/substitutes"
+    params = {
+        "ingredientName": cleaned_name,
+        "apiKey": SPOONACULAR_API_KEY
+    }
     
     substitutes = {
         "status": "success", 
-        "substitutes": [f"Option 1 for {ingredient_name}", f"Option 2 for {ingredient_name}"], 
+        "ingredient": cleaned_name,
+        "substitutes": [f"Option 1 for {cleaned_name}", f"Option 2 for {cleaned_name}"], 
         "message": "Using mock data - Configure SPOONACULAR_API_KEY in .env"
     }
     
     if SPOONACULAR_API_KEY and SPOONACULAR_API_KEY != "your_actual_key_here":
         try:
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, params=params, timeout=5)
+            
             if response.status_code == 200:
-                substitutes = response.json()
+                res_json = response.json()
+                if not res_json or "substitutes" not in res_json:
+                    substitutes = {
+                        "status": "success",
+                        "ingredient": cleaned_name,
+                        "substitutes": [],
+                        "message": "No substitutes found."
+                    }
+                else:
+                    substitutes = {
+                        "status": "success",
+                        "ingredient": cleaned_name,
+                        "substitutes": res_json.get("substitutes", []),
+                        "message": res_json.get("message", "Substitutes found successfully.")
+                    }
+            elif response.status_code == 404:
+                try:
+                    res_json = response.json()
+                    substitutes = {
+                        "status": "success",
+                        "ingredient": cleaned_name,
+                        "substitutes": [],
+                        "message": res_json.get("message", "No substitutes found.")
+                    }
+                except:
+                    substitutes = {
+                        "status": "success", 
+                        "ingredient": cleaned_name,
+                        "substitutes": [], 
+                        "message": "No substitutes found."
+                    }
+            elif response.status_code in [402, 429]:
+                substitutes = {
+                    "status": "error",
+                    "ingredient": cleaned_name,
+                    "substitutes": [],
+                    "message": "API limit exceeded. Please try again later."
+                }
             else:
-                substitutes["message"] = f"API Error: {response.status_code}"
+                substitutes = {
+                    "status": "error",
+                    "ingredient": cleaned_name,
+                    "substitutes": [],
+                    "message": f"API Error: {response.status_code}"
+                }
+                
+            if not response.text.strip():
+                substitutes = {
+                    "status": "error",
+                    "ingredient": cleaned_name,
+                    "substitutes": [],
+                    "message": "Empty response from API."
+                }
+                
+        except requests.exceptions.RequestException as e:
+            substitutes = {
+                "status": "error",
+                "ingredient": cleaned_name,
+                "substitutes": [],
+                "message": f"Connection Error: {str(e)}"
+            }
         except Exception as e:
-            substitutes["message"] = f"Connection Error: {str(e)}"
+            substitutes = {
+                "status": "error",
+                "ingredient": cleaned_name,
+                "substitutes": [],
+                "message": f"Unexpected Error: {str(e)}"
+            }
+
+    if substitutes.get("status") == "success" and "Error" not in substitutes.get("message", ""):
+        cache.set(cache_key, substitutes, 60*60*48)
         
     return JsonResponse(substitutes)
 
+
+from django.conf import settings
+import os
+
+def render_to_pdf_link_callback(uri, rel):
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+    resources.
+    """
+    if uri.startswith('http://') or uri.startswith('https://'):
+        return uri
+        
+    sUrl = settings.STATIC_URL
+    mUrl = getattr(settings, 'MEDIA_URL', '')
+    
+    mRoot = str(getattr(settings, 'MEDIA_ROOT', ''))
+    sRoot = str(getattr(settings, 'STATIC_ROOT', ''))
+
+    if mUrl and uri.startswith(mUrl):
+        path = os.path.join(mRoot, uri.replace(mUrl, ""))
+    elif sUrl and uri.startswith(sUrl):
+        path = os.path.join(sRoot, uri.replace(sUrl, ""))
+    else:
+        return uri
+
+    # Ensure path uses backslashes on Windows for os.path.isfile (os.path.join handles it usually, but just in case)
+    path = os.path.normpath(path)
+
+    if not os.path.isfile(path):
+        return uri
+    return path
 
 def download_recipe_pdf(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -395,7 +532,7 @@ def download_recipe_pdf(request, recipe_id):
     template = get_template(template_path)
     html = template.render(context)
     
-    pisa_status = pisa.CreatePDF(html, dest=response)
+    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=render_to_pdf_link_callback)
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response

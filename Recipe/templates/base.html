@@ -310,7 +310,7 @@
             const closeBtn = document.getElementById('savoryModalClose');
 
             titleEl.textContent = options.title || "Wait a minute...";
-            messageEl.textContent = message;
+            messageEl.innerHTML = message;
             confirmBtn.textContent = options.confirmText || "Confirm";
             cancelBtn.textContent = options.cancelText || "Cancel";
 

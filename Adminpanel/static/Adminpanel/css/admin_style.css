@@ -159,6 +159,47 @@
     background: #E63946;
 }
 
+/* Django Global Messages */
+.dj-message-container {
+    max-width: 100%;
+    margin-bottom: 25px;
+}
+
+.dj-alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 10px;
+    border-left: 5px solid transparent;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.dj-alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left-color: #28a745;
+}
+
+.dj-alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc3545;
+}
+
+.dj-alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left-color: #17a2b8;
+}
+
+.dj-alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left-color: #ffc107;
+}
+
 /* Admin Search Alignments */
 .admin-search-form {
     display: flex;

@@ -194,9 +194,6 @@ body.sidebar-expanded .feed-page {
 /* =========================
    Feed Cards
 ========================= */
-/* =========================
-   Feed Cards
-========================= */
 .feed-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

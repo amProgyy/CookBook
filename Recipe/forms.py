@@ -1,5 +1,5 @@
 from django import forms
-from .models import Recipe, Ingredient, Step,Tag
+from .models import Recipe, Ingredient, Step
 from django.forms import inlineformset_factory
 
 class RecipeForm(forms.ModelForm):

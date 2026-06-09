@@ -152,6 +152,15 @@
         </header>
 
         <div class="content-wrapper" style="padding: 20px;">
+            {% if messages %}
+            <div class="dj-message-container">
+                {% for message in messages %}
+                <div class="dj-alert dj-alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% block content %}{% endblock %}
         </div>
     </main>

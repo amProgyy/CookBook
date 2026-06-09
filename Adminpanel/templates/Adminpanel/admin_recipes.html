@@ -103,27 +103,9 @@
                     confirmText: "Yes, Delete",
                     cancelText: "Cancel"
                 });
-                if (!confirmed) return;
-
-                const currentForm = e.target;
-                const row = currentForm.closest('tr');
-                const url = currentForm.action;
-                const formData = new FormData(currentForm);
-
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            row.remove();
-                        }
-                    })
-                    .catch(err => console.error("Error deleting recipe:", err));
+                if (confirmed) {
+                    e.target.submit();
+                }
             });
         });
 
